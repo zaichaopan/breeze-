@@ -16,6 +16,17 @@ describe('view threads', () => {
         });
     });
 
+    it('shows threads', (done) => {
+        request(app)
+            .get('/threads')
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .end((err, res) => {
+                expect(res.body.threads.map(item => item._id.toString())).toContain(thread._id.toString());
+                done();
+            });
+    });
+
     it('shows a thread', (done) => {
         request(app)
             .get(`/threads/${thread._id}`)
