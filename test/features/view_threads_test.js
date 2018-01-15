@@ -17,8 +17,6 @@ describe('view threads', () => {
     });
 
     it('shows a thread', (done) => {
-
-        console.log(`/threads/${thread._id}`);
         request(app)
             .get(`/threads/${thread._id}`)
             .set('Accept', 'application/json')
