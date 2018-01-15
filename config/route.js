@@ -59,8 +59,8 @@
              handler = obj[key];
              url = prefix + url;
 
-             if (obj.before && obj.before.key) {
-                 app[method](url, obj.before.key, handler);
+             if (obj.before && obj.before[key]) {
+                 app[method](url, obj.before[key], handler);
                  verbose && console.log('\n %s %s -> before -> %s', method.toUpperCase(), url, key);
              } else {
                  app[method](url, handler);
