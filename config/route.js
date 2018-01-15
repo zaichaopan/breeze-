@@ -48,7 +48,7 @@
                      method = 'put';
                      url = `/${name}/:_id`;
                      break;
-                 case 'delete':
+                 case 'destroy':
                      method = 'post';
                      url = `/${name}/:_id`;
                      break;
