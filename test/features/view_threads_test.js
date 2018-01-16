@@ -1,19 +1,30 @@
+const promisify = require('es6-promisify');
 const app = require('../../app');
 const expect = require('expect');
 const request = require('supertest');
 const Thread = require('../../models/thread');
+const userFactory = require('../../db/factories/user');
 const threadFactory = require('../../db/factories/thread');
+const User = require('../../models/user')
 
 describe('view threads', () => {
     let thread;
+    let user;
 
     beforeEach((done) => {
         thread = threadFactory.make({
             title: 'foobar'
         });
-        thread.save().then(() => {
+
+        user = userFactory.make();
+        const register = promisify(User.register, User);
+
+        Promise.all([
+            thread.save(), register(user, 'password')
+        ]).then((result) => {
             done();
         });
+
     });
 
     it('shows threads', (done) => {
@@ -43,5 +54,5 @@ describe('view threads', () => {
             .get('/threads/create')
             .expect('Location', '/login')
             .expect(302, done);
-    })
+    });
 });
