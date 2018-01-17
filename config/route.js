@@ -38,19 +38,19 @@
                      break;
                  case 'show':
                      method = 'get';
-                     url = `/${name}/:${name}_id`;
+                     url = `/${name}/:_id`;
                      break;
                  case 'edit':
                      method = 'get';
-                     url = `/${name}/:${name}_id/edit`;
+                     url = `/${name}/:_id/edit`;
                      break;
                  case 'update':
                      method = 'put';
-                     url = `/${name}/:${name}_id`;
+                     url = `/${name}/:_id`;
                      break;
                  case 'delete':
                      method = 'post';
-                     url = `/${name}/:${name}_id`;
+                     url = `/${name}/:_id`;
                      break;
                  default:
                      throw new Error('unrecognized route: ' + name + '.' + key);
