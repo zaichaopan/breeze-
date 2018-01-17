@@ -41,11 +41,4 @@ describe('view threads', () => {
                 done();
             });
     });
-
-    // it('redirect guests to login when accessing create thread form', (done) => {
-    //     request(app)
-    //         .get('/threads/create')
-    //         .expect('Location', '/login')
-    //         .expect(302, done);
-    // });
 });
