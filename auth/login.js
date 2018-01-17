@@ -5,7 +5,7 @@ const showLoginForm= (req, res) => res.render('auth/login');
 const login= passport.authenticate('local', {
     failureRedirect: '/login',
     failureFlash: 'Failed Login',
-    successRedirect: '/',
+    successRedirect: '/threads',
     successFlash: 'You are now logged in'
 });
 

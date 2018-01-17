@@ -31,7 +31,12 @@ exports.index = asyncWrapper(async(req, res, next) => {
     });
 });
 
-exports.create = (req, res, next) => res.render('threads.create');
+exports.create = (req, res, next) => {
+    // console.log('in create');
+    // console.log(req.isAuthenticated());
+    res.send('hello')
+    //res.render('threads.create');
+}
 
 // exports.store
 
