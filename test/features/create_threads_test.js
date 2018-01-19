@@ -4,7 +4,7 @@ const expect = require('expect');
 const request = require('supertest');
 const Thread = require('../../models/thread');
 
-describe('create thread', () => {
+describe.skip('create thread', () => {
     const authenticatedUser = request.agent(app);
     before((done) => {
         authenticatedUser

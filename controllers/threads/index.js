@@ -2,24 +2,33 @@ const Thread = require('../../models/thread');
 const auth = require('../../middlewares/auth');
 const asyncWrapper = require('../../helper/asyncWrapper');
 
-const findThread = async(req, next) => {
+const findThread = asyncWrapper(async(req, res, next) => {
     const { _id } = req.params;
+
+    if (!_id.match(/^[0-9a-fA-F]{24}$/)) {
+       return next('route');
+    }
+
     const thread = await Thread.findOne({ _id });
-    if (!thread) next('route');
+
+    if (!thread) {
+        return next('route');
+    }
+
     req.thread = thread;
     next();
-};
+});
 
 exports.before = {
     show(req, res, next) {
-        asyncWrapper(findThread(req, next));
+        findThread(req, res, next);
     },
     create(req, res, next) {
         auth(req, res, next);
     },
     edit(req, res, next) {
         auth(req, res, next);
-        asyncWrapper(findThread(req, next));
+        findThread(req, res, next);
     }
 };
 
@@ -32,10 +41,7 @@ exports.index = asyncWrapper(async(req, res, next) => {
 });
 
 exports.create = (req, res, next) => {
-    // console.log('in create');
-    // console.log(req.isAuthenticated());
-    res.send('hello')
-    //res.render('threads.create');
+    res.render('threads.create');
 }
 
 // exports.store
