@@ -3,38 +3,22 @@ const expect = require('expect');
 const request = require('supertest');
 const Thread = require('../../models/thread');
 const threadFactory = require('../../db/factories/thread');
-const User = require('../../models/user');
 const userFactory = require('../../db/factories/user');
-const promisify = require('es6-promisify');
+
+const {
+    loginAs
+} = require('../helper');
 
 
 describe('threads', function () {
     let thread;
-    let user;
-    let authenticatedUser = request.agent(app);
+    let jane;
+    let loginAsJane;
+
     before(async function () {
-
-        user = userFactory.make({
-            email: 'jane@example.com'
-        });
-
-        const register = promisify(User.register, User);
-        await register(user, 'password');
-
-        thread = threadFactory.make({
-            title: 'foobar',
-            author: user._id
-        });
-
-        await thread.save();
-        await authenticatedUser
-            .post('/login')
-            .send({
-                email: 'jane@example.com',
-                password: 'password'
-            })
-            .expect('Location', '/threads')
-            .expect(302)
+        jane = await userFactory.create({ email: 'jane@example.com', password: 'password' });
+        thread = await threadFactory.create({ title: 'foobar', author: jane._id });
+        loginAsJane = await loginAs({ email: jane.email, password: 'password' });
     });
 
     describe('GET /threads', function () {
@@ -77,7 +61,7 @@ describe('threads', function () {
     describe('GET /threads/create', function () {
         describe('when login', function () {
             it('should display the create form', function (done) {
-                authenticatedUser
+                loginAsJane
                     .get('/threads/create')
                     .expect(200, done);
             });
@@ -106,7 +90,7 @@ describe('threads', function () {
         describe('when login', function () {
             describe.skip('when title or body not present', function () {
                 it('show get 302', function (done) {
-                    authenticatedUser
+                    loginAsJane
                         .post('/threads')
                         .send({
                             title: undefined,
@@ -123,7 +107,7 @@ describe('threads', function () {
                         body: 'Foobar'
                     };
 
-                    authenticatedUser
+                    loginAsJane
                         .post('/threads')
                         .send(attributes)
                         .end(function (err, res) {
@@ -133,7 +117,7 @@ describe('threads', function () {
                                 Thread.findOne(attributes).then(thread => {
                                     expect(thread.title).toEqual('Hello');
                                     expect(thread.body).toEqual('Foobar');
-                                    expect(thread.author.toString()).toEqual(user._id.toString())
+                                    expect(thread.author.toString()).toEqual(jane._id.toString())
                                     done();
                                 }).catch(done);
                             }
@@ -145,9 +129,6 @@ describe('threads', function () {
 
     describe.skip('GET /threads/:id/edit', function () {
         describe('when login', function () {
-            before(function (done) {
-
-            });
 
             describe('when not owner', function () {
                 it('should get 403', function (done) {
