@@ -15,8 +15,6 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use(cookieParser());
 
-app.use(flash());
-
 app.use(bodyParse.json());
 app.use(bodyParse.urlencoded({
     extended: true
@@ -24,20 +22,38 @@ app.use(bodyParse.urlencoded({
 
 app.use(methodOverride('_method'));
 
+app.use(flash());
+
+require('./config/session')(app, {
+    verbose: !module.parent
+});
+
+require('./config/auth')(app, {
+    verbose: !module.parent
+});
+
+// cannot put routes here, if validation fails, it will jump  to err, and skip set res.local
+
+app.use((req, res, next) => {
+    res.locals.flashes = req.flash();
+    res.locals.user = req.user || null;
+    res.locals.currentPath = req.path;
+    next();
+});
+
+// cannot put loin route here, otherwise, res.locals.user always get null
+
 require('./config/boot')(app, {
     verbose: !module.parent
 });
 
 
-
-//validation error handler
 app.use((err, req, res, next) => {
-  if (!err.errors) return next(err);
-  const errorKeys = Object.keys(err.errors);
-  let errors = errorKeys.map(key=>err.errors[key].message);
-  req.flash('errors', errors);
-  //errorKeys.forEach(key => req.flash('error', err.errors[key].message));
-  res.redirect('back');
+    if (!err.errors) return next(err);
+    const errorKeys = Object.keys(err.errors);
+    const errors = errorKeys.forEach(key => req.flash('error', err.errors[key].message));
+    res.locals.flashes = req.flash();
+    res.redirect('back');
 });
 
 app.use((err, req, res, next) => {

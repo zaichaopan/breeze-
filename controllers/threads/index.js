@@ -60,8 +60,8 @@ exports.create = (req, res, next) => {
 };
 
 exports.store = asyncWrapper(async(req, res, next) => {
-    console.log('in store');
     let thread = new Thread(req.body);
+    thread.author = req.user._id;
     await thread.save();
     res.redirect(`/threads/${thread._id}`);
 });

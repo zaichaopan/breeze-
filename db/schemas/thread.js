@@ -12,6 +12,12 @@ const threadSchema =
             type: String,
             trim: true,
             required: 'Please enter thread body!'
+        },
+
+        author: {
+            type: mongoose.Schema.ObjectId,
+            ref: 'user',
+            required: 'You must supply an author'
         }
     }, {
         timestamps: true

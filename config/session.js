@@ -14,7 +14,6 @@ module.exports = (parent, options) => {
             mongooseConnection: mongoose.connection
         })
     }));
-
     parent.use(app);
     verbose && console.log('session registered successfully');
 };

@@ -13,15 +13,20 @@ describe('threads', function () {
     let user;
     let authenticatedUser = request.agent(app);
     before(async function () {
-        thread = threadFactory.make({
-            title: 'foobar'
-        });
+
         user = userFactory.make({
             email: 'jane@example.com'
         });
+
         const register = promisify(User.register, User);
-        await thread.save();
         await register(user, 'password');
+
+        thread = threadFactory.make({
+            title: 'foobar',
+            author: user._id
+        });
+
+        await thread.save();
         await authenticatedUser
             .post('/login')
             .send({
@@ -88,7 +93,7 @@ describe('threads', function () {
         });
     });
 
-    describe.only('POST /threads', function () {
+    describe('POST /threads', function () {
         describe('when not login', function () {
             it('should get 302', function (done) {
                 request(app)
@@ -99,29 +104,20 @@ describe('threads', function () {
         });
 
         describe('when login', function () {
-            describe('when title or body not present', function () {
-                it('show show validation error', function () {
-
-                    let error = new Thread({
-                        title: undefined,
-                        body: undefined
-                    }).validateSync();
-                    
-                    expect(error.errors['title'].message).toEqual('Please enter thread title!');
-                    expect(error.errors['body'].message).toEqual('Please enter thread body!');
-
-                    error = new Thread({
-                        title: '',
-                        body: ''
-                    }).validateSync();
-
-                    expect(error.errors['title'].message).toEqual('Please enter thread title!');
-                    expect(error.errors['body'].message).toEqual('Please enter thread body!');
+            describe.skip('when title or body not present', function () {
+                it('show get 302', function (done) {
+                    authenticatedUser
+                        .post('/threads')
+                        .send({
+                            title: undefined,
+                            body: undefined
+                        })
+                        .expect(302, done);
                 });
             });
 
-            describe.skip('when title and body present', function () {
-                it('should create a thread', function (done) {
+            describe('when title and body present', function () {
+                it('should create a thread for user', function (done) {
                     let attributes = {
                         title: 'Hello',
                         body: 'Foobar'
@@ -135,7 +131,9 @@ describe('threads', function () {
                                 done();
                             } else {
                                 Thread.findOne(attributes).then(thread => {
-                                    expect(thread).toBeTruthy();
+                                    expect(thread.title).toEqual('Hello');
+                                    expect(thread.body).toEqual('Foobar');
+                                    expect(thread.author.toString()).toEqual(user._id.toString())
                                     done();
                                 }).catch(done);
                             }
