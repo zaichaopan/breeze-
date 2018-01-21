@@ -28,9 +28,19 @@ require('./config/boot')(app, {
     verbose: !module.parent
 });
 
+
+
+//validation error handler
 app.use((err, req, res, next) => {
-console.log('in here');
-console.log(err);
+  if (!err.errors) return next(err);
+  const errorKeys = Object.keys(err.errors);
+  let errors = errorKeys.map(key=>err.errors[key].message);
+  req.flash('errors', errors);
+  //errorKeys.forEach(key => req.flash('error', err.errors[key].message));
+  res.redirect('back');
+});
+
+app.use((err, req, res, next) => {
     if (!module.parent && !isProd) console.log(err.stack);
     res.status(500).render('errors/5xx');
 });

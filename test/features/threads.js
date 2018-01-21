@@ -99,25 +99,48 @@ describe('threads', function () {
         });
 
         describe('when login', function () {
-            it('should create a thread', function (done) {
-                let attributes = {
-                    title: 'Hello',
-                    body: 'Foobar'
-                };
+            describe('when title or body not present', function () {
+                it('show show validation error', function () {
 
-                authenticatedUser
-                    .post('/threads')
-                    .send(attributes)
-                    .end(function (err, res) {
-                        if (err) {
-                            done();
-                        } else {
-                            Thread.findOne(attributes).then(thread => {
-                                expect(thread).toBeTruthy();
+                    let error = new Thread({
+                        title: undefined,
+                        body: undefined
+                    }).validateSync();
+                    
+                    expect(error.errors['title'].message).toEqual('Please enter thread title!');
+                    expect(error.errors['body'].message).toEqual('Please enter thread body!');
+
+                    error = new Thread({
+                        title: '',
+                        body: ''
+                    }).validateSync();
+
+                    expect(error.errors['title'].message).toEqual('Please enter thread title!');
+                    expect(error.errors['body'].message).toEqual('Please enter thread body!');
+                });
+            });
+
+            describe.skip('when title and body present', function () {
+                it('should create a thread', function (done) {
+                    let attributes = {
+                        title: 'Hello',
+                        body: 'Foobar'
+                    };
+
+                    authenticatedUser
+                        .post('/threads')
+                        .send(attributes)
+                        .end(function (err, res) {
+                            if (err) {
                                 done();
-                            }).catch(done);
-                        }
-                    });
+                            } else {
+                                Thread.findOne(attributes).then(thread => {
+                                    expect(thread).toBeTruthy();
+                                    done();
+                                }).catch(done);
+                            }
+                        });
+                });
             });
         });
     });
