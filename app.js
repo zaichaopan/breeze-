@@ -29,6 +29,8 @@ require('./config/boot')(app, {
 });
 
 app.use((err, req, res, next) => {
+console.log('in here');
+console.log(err);
     if (!module.parent && !isProd) console.log(err.stack);
     res.status(500).render('errors/5xx');
 });

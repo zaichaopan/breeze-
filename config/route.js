@@ -3,7 +3,7 @@
  const fs = require('fs');
 
  module.exports = (parent, options) => {
-     const dir = path.join(__dirname, '..', 'controllers');
+    const dir = path.join(__dirname, '..', 'controllers');
      const {
          verbose
      } = options;

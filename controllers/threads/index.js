@@ -3,13 +3,17 @@ const auth = require('../../middlewares/auth');
 const asyncWrapper = require('../../helper/asyncWrapper');
 
 const findThread = asyncWrapper(async(req, res, next) => {
-    const { _id } = req.params;
+    const {
+        _id
+    } = req.params;
 
     if (!_id.match(/^[0-9a-fA-F]{24}$/)) {
-       return next('route');
+        return next('route');
     }
 
-    const thread = await Thread.findOne({ _id });
+    const thread = await Thread.findOne({
+        _id
+    });
 
     if (!thread) {
         return next('route');
@@ -29,31 +33,63 @@ exports.before = {
     edit(req, res, next) {
         auth(req, res, next);
         findThread(req, res, next);
+    },
+    store(req, res, next) {
+        auth(req, res, next);
     }
 };
 
 exports.index = asyncWrapper(async(req, res, next) => {
     const threads = await Thread.find({});
     res.format({
-        html() { res.render('threads/index', { threads }); },
-        json() { res.send({ threads }); }
+        html() {
+            res.render('threads/index', {
+                threads
+            });
+        },
+        json() {
+            res.send({
+                threads
+            });
+        }
     });
 });
 
 exports.create = (req, res, next) => {
-    res.render('threads.create');
-}
+    res.render('threads/create');
+};
 
-// exports.store
+exports.store = asyncWrapper(async(req, res, next) => {
+    console.log('in store');
+    let thread = new Thread(req.body);
+    await thread.save();
+    res.redirect(`/threads/${thread._id}`);
+});
 
 exports.show = (req, res, next) => res.format({
-    html() { res.render('threads/index', { thread: req.thread }); },
-    json() { res.send({ thread: req.thread }); }
+    html() {
+        res.render('threads/index', {
+            thread: req.thread
+        });
+    },
+    json() {
+        res.send({
+            thread: req.thread
+        });
+    }
 });
 
 exports.edit = (req, res, next) => res.format({
-    html() { res.render('threads/edit', { thread: req.thread }); },
-    json() { res.send({ thread: req.thread }); }
+    html() {
+        res.render('threads/edit', {
+            thread: req.thread
+        });
+    },
+    json() {
+        res.send({
+            thread: req.thread
+        });
+    }
 });
 
 // update
