@@ -151,29 +151,32 @@ describe('threads', function () {
     });
 
 
-    describe.skip('GET /threads/:id/edit', function () {
+    describe('GET /threads/:id/edit', function () {
         describe('when login', function () {
             describe('when not owner', function () {
                 it('should get 403', function (done) {
                     loginAsJane
                         .get(`/threads/${threadByJohn._id}/edit`)
-                        .expect(200, done)
+                        .expect(403, done)
                 });
-
             });
 
-            // describe.skip('when owner', function () {
-            //     it('should display the edit form', function (done) {
-            //         // ...
-            //     });
-            // })
+            describe('when owner', function () {
+                it('should display the edit form', function (done) {
+                    loginAsJane
+                        .get(`/threads/${threadByJane._id}/edit`)
+                        .expect(200, done)
+                });
+            })
 
         });
 
-        describe.skip('when not login', function () {
+        describe('when not login', function () {
             it('should redirect to login', function (done) {
-                request(app).get(`/threads/${threadByJohn._id}/edit`)
-                    .expect(200, done)
+                request(app)
+                    .get(`/threads/${threadByJohn._id}/edit`)
+                    .expect('Location', '/login')
+                    .expect(302, done)
             });
         });
     });

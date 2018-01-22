@@ -16,11 +16,7 @@ const findThread = asyncWrapper(async(req, res, next) => {
         _id
     });
 
-    //console.log(thread);
-
-    if (!thread) {
-        return next('route');
-    }
+    if (!thread) return next('route');
 
     req.thread = thread;
     next();
@@ -67,7 +63,10 @@ module.exports = {
         })
     }],
 
-    edit: [auth, findThread, (req, res, next) => {
+    edit: [auth, findThread, checkOwner({
+        name: 'thread',
+        foreignKey: 'author'
+    }), (req, res, next) => {
         res.format({
             html() {
                 res.render('threads/edit', {

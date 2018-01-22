@@ -57,13 +57,17 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-    console.log('in error');
     if (!module.parent && !isProd) console.log(err.stack);
     res.status(500).render('errors/5xx');
 });
 
 app.use((req, res, next) => {
-    console.log('in 404');
+    if (res.statusCode === 403) {
+        return res.render('errors/403', {
+            url: req.originalUrl
+        });
+    }
+
     res.status(404).render('errors/404', {
         url: req.originalUrl
     });
