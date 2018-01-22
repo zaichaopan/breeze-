@@ -11,15 +11,25 @@ const {
 
 
 describe('threads', function () {
-    let thread;
+    let threadByJane;
     let jane;
     let loginAsJane;
 
     before(async function () {
-        jane = await userFactory.create({ email: 'jane@example.com', password: 'password' });
-        thread = await threadFactory.create({ title: 'foobar', author: jane._id });
-        loginAsJane = await loginAs({ email: jane.email, password: 'password' });
+        jane = await userFactory.create({
+            email: 'jane@example.com',
+            password: 'password'
+        });
+        threadByJane = await threadFactory.create({
+            title: 'foobar',
+            author: jane._id
+        });
+        loginAsJane = await loginAs({
+            email: jane.email,
+            password: 'password'
+        });
     });
+
 
     describe('GET /threads', function () {
         it('should display a list of threads', function (done) {
@@ -28,7 +38,7 @@ describe('threads', function () {
                 .expect('Content-Type', /json/)
                 .end((err, res) => {
                     if (err) return done(err);
-                    expect(res.body.threads.map(item => item._id.toString())).toContain(thread._id.toString());
+                    expect(res.body.threads.map(item => item._id.toString())).toContain(threadByJane._id.toString());
                     done();
                 });
         });
@@ -38,12 +48,12 @@ describe('threads', function () {
         describe('when present', function () {
             it('should display the thread', function (done) {
                 request(app)
-                    .get(`/threads/${thread._id}`)
+                    .get(`/threads/${threadByJane._id}`)
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .end((err, res) => {
                         if (err) return done();
-                        expect(res.body.thread._id.toString()).toEqual(thread._id.toString());
+                        expect(res.body.thread._id.toString()).toEqual(threadByJane._id.toString());
                         done();
                     });
             });
@@ -88,7 +98,7 @@ describe('threads', function () {
         });
 
         describe('when login', function () {
-            describe.skip('when title or body not present', function () {
+            describe('when title or body not present', function () {
                 it('show get 302', function (done) {
                     loginAsJane
                         .post('/threads')
@@ -102,25 +112,26 @@ describe('threads', function () {
 
             describe('when title and body present', function () {
                 it('should create a thread for user', function (done) {
-                    let attributes = {
-                        title: 'Hello',
-                        body: 'Foobar'
-                    };
-
                     loginAsJane
                         .post('/threads')
-                        .send(attributes)
+                        .send({
+                            title: 'Hello',
+                            body: 'Foobar'
+                        })
                         .end(function (err, res) {
                             if (err) {
-                                done();
-                            } else {
-                                Thread.findOne(attributes).then(thread => {
-                                    expect(thread.title).toEqual('Hello');
-                                    expect(thread.body).toEqual('Foobar');
-                                    expect(thread.author.toString()).toEqual(jane._id.toString())
-                                    done();
-                                }).catch(done);
+                                return done();
                             }
+
+                            Thread.findOne({
+                                title: 'Hello',
+                                body: 'Foobar'
+                            }).then(thread => {
+                                expect(thread.title).toEqual('Hello');
+                                expect(thread.body).toEqual('Foobar');
+                                expect(thread.author.toString()).toEqual(jane._id.toString())
+                                done();
+                            }).catch(done);
                         });
                 });
             });
