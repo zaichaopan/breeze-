@@ -49,7 +49,9 @@ describe('threads', function () {
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .end((err, res) => {
-                    if (err) return done(err);
+                    if (err) {
+                        return done(err);
+                    }
                     expect(res.body.threads.map(item => item._id.toString())).toContain(threadByJane._id.toString());
                     done();
                 });
@@ -64,7 +66,9 @@ describe('threads', function () {
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .end((err, res) => {
-                        if (err) return done();
+                        if (err) {
+                            return done();
+                        }
                         expect(res.body.thread._id.toString()).toEqual(threadByJane._id.toString());
                         done();
                     });
@@ -134,7 +138,6 @@ describe('threads', function () {
                             if (err) {
                                 return done();
                             }
-
                             Thread.findOne({
                                 title: 'Hello',
                                 body: 'Foobar'
@@ -167,7 +170,7 @@ describe('threads', function () {
                         .get(`/threads/${threadByJane._id}/edit`)
                         .expect(200, done)
                 });
-            })
+            });
         });
 
         describe('when not login', function () {
@@ -213,7 +216,6 @@ describe('threads', function () {
                                 if (err) {
                                     return done;
                                 }
-
                                 Thread.findOne({
                                     _id: threadByJane._id
                                 }).then(newThread => {
@@ -269,7 +271,6 @@ describe('threads', function () {
                                 if (err) {
                                     return done();
                                 }
-
                                 Thread.findOne({
                                     _id: threadByJane._id
                                 }).then(item => {
@@ -288,7 +289,7 @@ describe('threads', function () {
                             .expect(403, done);
                     });
                 });
-            })
+            });
         });
     });
 });
