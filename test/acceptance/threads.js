@@ -100,7 +100,7 @@ describe('threads', function () {
     });
 
     describe('POST /threads', function () {
-        describe.skip('when not login', function () {
+        describe('when not login', function () {
             it('should get 302', function (done) {
                 request(app)
                     .post('/threads')
@@ -168,7 +168,6 @@ describe('threads', function () {
                         .expect(200, done)
                 });
             })
-
         });
 
         describe('when not login', function () {
@@ -181,23 +180,63 @@ describe('threads', function () {
         });
     });
 
-    // describe.skip('PUT /threads/:id', function () {
-    //     describe('when login', function () {
-    //         before(function (done) {
+    describe('PUT /threads/:id', function () {
+        describe('when login', function () {
+            describe('when not creator', function () {
+                it('should get 403', function (done) {
+                    loginAsJane
+                        .post(`/threads/${threadByJohn._id}?_method=PUT`)
+                        .send({})
+                        .expect(403, done);
+                });
+            });
 
-    //         });
+            describe('when creator', function () {
+                describe('when title and body not present', function () {
+                    it('should get 302', function (done) {
+                        loginAsJane
+                            .post(`/threads/${threadByJane._id}?_method=PUT`)
+                            .send({})
+                            .expect(302, done);
+                    });
+                });
 
-    //         it('should display the edit form', function (done) {
-    //             // ...
-    //         });
-    //     });
+                describe('when title and body present', function () {
+                    it('should get thread for the creator', function (done) {
+                        loginAsJane
+                            .post(`/threads/${threadByJane._id}?_method=PUT`)
+                            .send({
+                                title: 'new title',
+                                body: 'new body'
+                            })
+                            .end(function (err, res) {
+                                if (err) {
+                                    return done;
+                                }
 
-    //     describe('when not login', function () {
-    //         it('should redirect to login', function (done) {
-    //             // ...
-    //         });
-    //     });
-    // });
+                                Thread.findOne({
+                                    _id: threadByJane._id
+                                }).then(newThread => {
+                                    expect(newThread.title).toEqual('new title');
+                                    expect(newThread.body).toEqual('new body');
+                                    done()
+                                });
+                            });
+                    });
+                });
+            })
+        });
+
+        describe('when not login', function () {
+            it('should redirect to login', function (done) {
+                request(app)
+                    .post(`/threads/${threadByJane._id}?_method=PUT`)
+                    .send({})
+                    .expect('Location', '/login')
+                    .expect(302, done);
+            });
+        });
+    });
 
     // describe.skip('Delete /threads/:id', function () {
     //     describe('when not login', function () {
