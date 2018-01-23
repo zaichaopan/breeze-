@@ -76,6 +76,7 @@ module.exports = {
             }
         })
     ],
+
     update: [
         auth,
         asyncWrapper(loadModel({
@@ -92,6 +93,7 @@ module.exports = {
             res.redirect(`/threads/${thread._id}`);
         })
     ],
+
     destroy: [
         auth,
         asyncWrapper(loadModel({
