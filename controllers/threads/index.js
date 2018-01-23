@@ -91,6 +91,20 @@ module.exports = {
             await thread.save();
             res.redirect(`/threads/${thread._id}`);
         })
+    ],
+    destroy: [
+        auth,
+        asyncWrapper(loadModel({
+            model: 'thread'
+        })),
+        checkOwner({
+            name: 'thread',
+            foreignKey: 'author'
+        }),
+        asyncWrapper(async(req, res, next) => {
+            let thread = req.thread;
+            await thread.remove();
+            res.redirect('/threads');
+        })
     ]
-    // destroy
 }

@@ -48,7 +48,7 @@ module.exports = (parent, options) => {
                     url = `/${name}/:_id`;
                     break;
                 case 'destroy':
-                    method = 'post';
+                    method = 'delete';
                     url = `/${name}/:_id`;
                     break;
                 default:

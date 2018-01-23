@@ -238,41 +238,57 @@ describe('threads', function () {
         });
     });
 
-    // describe.skip('Delete /threads/:id', function () {
-    //     describe('when not login', function () {
-    //         it('should get 401', function (done) {
-    //             // ...
-    //         });
-    //     });
+    describe('Delete /threads/:id', function () {
+        describe('when not login', function () {
+            it('should redirect to login', function (done) {
+                request(app)
+                    .post(`/threads/${threadByJane._id}?_method=DELETE`)
+                    .send({})
+                    .expect('Location', '/login')
+                    .expect(302, done);
+            });
+        });
 
-    //     describe('when login', function () {
-    //         before(function (done) {
-    //             // login
-    //         });
+        describe('when login', function () {
+            describe('when not present', function () {
+                it('should get 404', function (done) {
+                    loginAsJane
+                        .post(`/threads/abc?_method=DELETE`)
+                        .send({})
+                        .expect(404, done);
+                });
+            });
 
-    //         describe('when not present', function () {
-    //             it('should get 404', function (done) {
-    //                 // ...
-    //             });
-    //         });
+            describe('when present', function () {
+                describe('when it is creator', function () {
+                    it('should remove the thread for the creator', function (done) {
+                        loginAsJane
+                            .post(`/threads/${threadByJane._id}?_method=DELETE`)
+                            .send({})
+                            .end(function (err, res) {
+                                if (err) {
+                                    return done();
+                                }
 
-    //         describe('when present', function () {
-    //             describe('when it is creator', function () {
-    //                 before(function (done) {
+                                Thread.findOne({
+                                    _id: threadByJane._id
+                                }).then(item => {
+                                    expect(item).toBeNull();
+                                    done();
+                                });
+                            });
+                    });
+                });
 
-    //                 });
-
-    //                 it('should remove the thread', function (done) {
-    //                     // ...
-    //                 });
-    //             });
-
-    //             describe('when it is not creator', function (done) {
-    //                 it('should get 405', function (done) {
-    //                     // ...
-    //                 });
-    //             });
-    //         })
-    //     });
-    // });
+                describe('when it is not creator', function (done) {
+                    it('should get 403', function (done) {
+                        loginAsJane
+                            .post(`/threads/${threadByJohn._id}?_method=DELETE`)
+                            .send({})
+                            .expect(403, done);
+                    });
+                });
+            })
+        });
+    });
 });
