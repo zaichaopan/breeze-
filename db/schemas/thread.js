@@ -8,6 +8,7 @@ const threadSchema =
             trim: true,
             required: [true, 'Please enter thread title!']
         },
+        slug: String,
         body: {
             type: String,
             trim: true,

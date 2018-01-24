@@ -4,6 +4,10 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 userSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
-const User = mongoose.model('user', userSchema);
 
-module.exports = User;
+userSchema.virtual('sluggables', [
+    'name'
+]);
+
+module.exports = mongoose.model('user', userSchema);
+
