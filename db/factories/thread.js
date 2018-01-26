@@ -1,5 +1,6 @@
 const faker = require('faker');
 const Thread = require('../../models/thread');
+const userFactory = require('./user');
 
 exports.create = async(override = null) => {
     let thread = new Thread({
@@ -10,6 +11,17 @@ exports.create = async(override = null) => {
         ...override
     });
 
-    await thread.save();
+    let {
+        _id
+    } = override;
+
+    if (_id) {
+        let user = await userFactory.create();
+        _id = user._id;
+    }
+
+    await thread.save({
+        _id
+    });
     return thread;
 };

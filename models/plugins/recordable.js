@@ -6,19 +6,15 @@ module.exports = (schema, options) => {
     } = options;
 
     recordables.forEach(recordable => {
-        schema.pre(recordable, async function (next, req) {
-
-            // handle test
+        schema.pre(recordable, async function (next, user) {
             let {
-                user = {
-                    _id: null
-                }
-            } = req;
+                _id
+            } = user;
 
             let kind = this.constructor.modelName;
             let type = `${recordable}_${kind}`;
             let activity = new Activity({
-                user: user._id,
+                user: _id,
                 type,
                 subject: {
                     kind,

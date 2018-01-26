@@ -20,7 +20,7 @@ describe('thread model', function () {
             });
 
             thread.save({
-                user
+                _id: user._id
             }).then(item => {
                 Activity.findOne({
                     user: user._id

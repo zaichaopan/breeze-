@@ -18,7 +18,7 @@ describe('activity model', function () {
             body: 'foobar',
             author: user._id
         }).save({
-            user
+            _id: user._id
         });
     });
 

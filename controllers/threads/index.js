@@ -31,7 +31,7 @@ module.exports = {
         asyncWrapper(async(req, res, next) => {
             let thread = new Thread(req.body);
             thread.author = req.user._id;
-            await thread.save(req);
+            await thread.save(req.user);
             res.redirect(`/threads/${thread._id}`);
         })
     ],
