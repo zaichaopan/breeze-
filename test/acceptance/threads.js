@@ -19,6 +19,7 @@ describe('threads', function () {
     let threadByJohn;
     let loginAsJane;
 
+
     before(async function () {
         jane = await userFactory.create({
             email: 'jane@example.com',
@@ -28,6 +29,8 @@ describe('threads', function () {
             email: 'john@example.com',
             password: 'password'
         });
+
+
         threadByJane = await threadFactory.create({
             title: 'foobar',
             author: jane._id

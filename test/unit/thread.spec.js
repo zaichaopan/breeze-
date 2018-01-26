@@ -2,8 +2,41 @@ const Thread = require('../../models/thread');
 const expect = require('expect');
 const userFactory = require('../../db/factories/user');
 const threadFactory = require('../../db/factories/thread');
+const Activity = require('../../models/activity');
+const User = require('../../models/user');
 
-describe.only('thread model', function () {
+describe('thread model', function () {
+    describe('recordable', function () {
+        it('records user creating thread', function (done) {
+            let user = new User({
+                email: 'jane@example.com',
+                name: 'jame'
+            });
+
+            let thread = new Thread({
+                title: 'Hello',
+                body: 'foobar',
+                author: user._id
+            });
+
+            thread.save({
+                user
+            }).then(item => {
+                Activity.findOne({
+                    user: user._id
+                }).then(activity => {
+                    expect(activity).not.toBe(null);
+                    done();
+                }).catch(err => {
+                    done();
+                });
+
+            }).catch(err => {
+                done();
+            });
+        });
+    });
+
     describe('add slug', function () {
         let thread;
         let user;
@@ -40,7 +73,6 @@ describe.only('thread model', function () {
                     expect(thread.slug).not.toBe('foo-bar');
                     done();
                 });
-
             });
         });
     });
