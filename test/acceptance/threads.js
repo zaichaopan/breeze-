@@ -271,7 +271,9 @@ describe('threads', function () {
                             .post(`/threads/${threadByJane._id}?_method=DELETE`)
                             .send({})
                             .end(function (err, res) {
+                                console.log('called called called');
                                 if (err) {
+                                    console.log(err);
                                     return done();
                                 }
                                 Thread.findOne({
@@ -279,6 +281,8 @@ describe('threads', function () {
                                 }).then(item => {
                                     expect(item).toBeNull();
                                     done();
+                                }).catch(err => {
+                                    console.log(err);
                                 });
                             });
                     });

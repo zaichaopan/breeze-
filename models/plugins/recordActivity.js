@@ -20,33 +20,18 @@ module.exports = (schema) => {
         await activity.save();
         next();
     });
+
+    schema.pre('remove', async function (next) {
+        await this.activity().remove();
+        next();
+    });
+
+    schema.methods.activity = function () {
+        return this.model('activity').find({
+            subject: {
+                kind: this.constructor.modelName,
+                item: this._id
+            }
+        });
+    };
 };
-
-// Add a instance method to model
-// schema.methods.activities = function()
-/*
-schema.methods.activities = function() {
-    return this.model('activity').find({
-        subject: {
-           kind: this.constructor.modelName,
-           item:  this._id
-        }
-    });
-}
-
-schema.pre('delete', async function(next) {
-    $activities = await this.activities();
-    await $activities.remove();
-})
-
-comments
-check spam
-
-//static method
-Activity.OfUser()
-activitySchema.statics.ofUser = function(user) {
-    return this.model('activity').find({
-        user: user._id
-    });
-}
-*/

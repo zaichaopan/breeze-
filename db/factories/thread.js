@@ -2,7 +2,7 @@ const faker = require('faker');
 const Thread = require('../../models/thread');
 const userFactory = require('./user');
 
-exports.create = async(override = null) => {
+exports.create = async (override = {}) => {
     let thread = new Thread({
         ...{
             title: faker.lorem.sentence(),
@@ -12,16 +12,14 @@ exports.create = async(override = null) => {
     });
 
     let {
-        _id
+        author
     } = override;
 
-    if (_id) {
-        let user = await userFactory.create();
-        _id = user._id;
+    if (!author) {
+        let author = await userFactory.create();
+        thread.author = author._id;
     }
 
-    await thread.save({
-        _id
-    });
+    await thread.save();
     return thread;
 };
