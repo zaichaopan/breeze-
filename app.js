@@ -7,7 +7,6 @@ const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
 const isProd = process.env.NODE_ENV === 'production';
 const promisify = require('es6-promisify');
-const loginController = require('./auth/login');
 const app = module.exports = express();
 
 app.set('view engine', 'pug');
@@ -26,6 +25,10 @@ app.use(methodOverride('_method'));
 
 app.use(flash());
 
+require('./config/boot')(app, {
+    verbose: !module.parent
+});
+
 require('./config/session')(app, {
     verbose: !module.parent
 });
@@ -33,8 +36,6 @@ require('./config/session')(app, {
 require('./config/auth')(app, {
     verbose: !module.parent
 });
-
-// cannot put routes here, if validation fails, it will jump  to err, and skip set res.local
 
 app.use((req, res, next) => {
     res.locals.flashes = req.flash();
@@ -49,14 +50,8 @@ app.use((req, res, next) => {
     next();
 });
 
-// cannot put loin route here, otherwise, res.locals.user always get null
-app.get('/login', loginController.showLoginForm);
-app.post('/login', loginController.login);
-
-require('./config/boot')(app, {
-    verbose: !module.parent
-});
-
+// routing
+require('./routes')(app);
 
 app.use((err, req, res, next) => {
     if (!err.errors) return next(err);

@@ -10,7 +10,7 @@ const {
 } = require('../helper');
 
 
-describe.only('threads', function () {
+describe('threads', function () {
     this.timeout(5000);
 
     let jane;
@@ -87,8 +87,8 @@ describe.only('threads', function () {
         })
     });
 
-    describe.only('GET /threads/create', function () {
-        describe.only('when login', function () {
+    describe('GET /threads/create', function () {
+        describe('when login', function () {
             it('should display the create form', function (done) {
                 loginAsJane
                     .get('/threads/create')
@@ -271,7 +271,6 @@ describe.only('threads', function () {
                             .post(`/threads/${threadByJane._id}?_method=DELETE`)
                             .send({})
                             .end(function (err, res) {
-                                console.log('called called called');
                                 if (err) {
                                     console.log(err);
                                     return done();
