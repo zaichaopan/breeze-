@@ -6,6 +6,8 @@ const bodyParse = require('body-parser');
 const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
 const isProd = process.env.NODE_ENV === 'production';
+const promisify = require('es6-promisify');
+const loginController = require('./auth/login');
 const app = module.exports = express();
 
 app.set('view engine', 'pug');
@@ -41,7 +43,15 @@ app.use((req, res, next) => {
     next();
 });
 
+// promisify
+app.use((req, res, next) => {
+    req.login = promisify(req.login, req);
+    next();
+});
+
 // cannot put loin route here, otherwise, res.locals.user always get null
+app.get('/login', loginController.showLoginForm);
+app.post('/login', loginController.login);
 
 require('./config/boot')(app, {
     verbose: !module.parent

@@ -10,7 +10,7 @@ const {
 } = require('../helper');
 
 
-describe('threads', function () {
+describe.only('threads', function () {
     this.timeout(5000);
 
     let jane;
@@ -87,8 +87,8 @@ describe('threads', function () {
         })
     });
 
-    describe('GET /threads/create', function () {
-        describe('when login', function () {
+    describe.only('GET /threads/create', function () {
+        describe.only('when login', function () {
             it('should display the create form', function (done) {
                 loginAsJane
                     .get('/threads/create')

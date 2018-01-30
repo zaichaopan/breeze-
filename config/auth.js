@@ -13,8 +13,8 @@ module.exports = (parent, options) => {
     app.use(passport.session());
 
     // authentication router
-    app.get('/login', loginController.showLoginForm);
-    app.post('/login', loginController.login);
+    // app.get('/login', loginController.showLoginForm);
+    // app.post('/login', loginController.login);
 
     verbose && console.log('auth registered successfully');
 
