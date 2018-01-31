@@ -19,7 +19,3 @@ const activitySchema = new Schema({
 });
 
 module.exports = activitySchema;
-
-
-// look for ref path for dynamic ref
-// http://mongoosejs.com/docs/populate.html

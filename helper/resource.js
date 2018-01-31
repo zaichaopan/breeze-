@@ -18,7 +18,6 @@ module.exports = (controller) => {
         let method;
 
         if (!~controllerActions.indexOf(action)) {
-            console.log('called return return')
             return;
         }
 

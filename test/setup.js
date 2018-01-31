@@ -3,10 +3,15 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 const promisify = require('es6-promisify');
 const userFactory = require('../db/factories/user');
-const User = require('../models/user')
+const User = require('../models/user');
+const {
+    clearDb
+} = require('./helper');
 
-before(async function() {
-    mongoose.connect(process.env.TEST_DATABASE, { useMongoClient: true });
+before(async function () {
+    mongoose.connect(process.env.TEST_DATABASE, {
+        useMongoClient: true
+    });
 
     await mongoose.connection
         .once('open', () => console.log('Good to go!'))
@@ -15,8 +20,3 @@ before(async function() {
     await clearDb();
 });
 
-async function clearDb() {
-    for (var collection in mongoose.connection.collections) {
-        await mongoose.connection.collections[collection].remove();
-    }
-}

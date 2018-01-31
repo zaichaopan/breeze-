@@ -1,7 +1,8 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const {
+    Schema
+} = require('mongoose');
 
-const threadSchema = new Schema({
+module.exports = new Schema({
     title: {
         type: String,
         trim: true,
@@ -15,13 +16,10 @@ const threadSchema = new Schema({
     },
 
     author: {
-        type: mongoose.Schema.ObjectId,
+        type: Schema.ObjectId,
         ref: 'user',
         required: 'You must supply an author'
     }
 }, {
     timestamps: true
 });
-
-
-module.exports = threadSchema;

@@ -99,7 +99,7 @@ module.exports = {
             checkOwner({
                 name: 'thread',
                 foreignKey: 'author'
-            }),
+            })
         ],
         handler: asyncWrapper(async (req, res, next) => {
             let thread = req.thread;

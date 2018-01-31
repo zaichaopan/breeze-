@@ -1,10 +1,11 @@
 const app = require('../../app');
-const expect = require('chai').expect;
 const request = require('supertest');
 const Thread = require('../../models/thread');
 const threadFactory = require('../../db/factories/thread');
 const userFactory = require('../../db/factories/user');
-
+const {
+    expect
+} = require('chai');
 const {
     loginAs
 } = require('../helper');

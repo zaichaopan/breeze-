@@ -1,7 +1,9 @@
-const expect = require('chai').expect;
 const userFactory = require('../../db/factories/user');
 const threadFactory = require('../../db/factories/thread');
 const Activity = require('../../models/activity');
+const {
+    expect
+} = require('chai');
 
 describe('thread model', function () {
     describe('record activity plugin', function () {

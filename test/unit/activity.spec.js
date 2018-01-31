@@ -1,7 +1,9 @@
-const expect = require('chai').expect;
 const User = require('../../models/user');
 const Thread = require('../../models/thread');
 const Activity = require('../../models/activity');
+const {
+    expect
+} = require('chai');
 
 describe('activity model', function () {
     let thread;
