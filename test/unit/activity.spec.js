@@ -1,4 +1,4 @@
-const expect = require('expect');
+const expect = require('chai').expect;
 const User = require('../../models/user');
 const Thread = require('../../models/thread');
 const Activity = require('../../models/activity');
@@ -22,14 +22,11 @@ describe('activity model', function () {
         });
     });
 
-    it('should populate correct subject', function (done) {
-        Activity.findOne({
+    it('should populate correct subject', async function () {
+        let activity = await Activity.findOne({
             user: user._id
-        }).populate('subject.item').then(activity => {
-            expect(activity.subject.item._id.toString()).toEqual(thread._id.toString());
-            done();
-        }).catch(err => {
-            done();
-        });
+        }).populate('subject.item');
+
+        expect(activity.subject.item._id.toString()).to.equal(thread._id.toString());
     });
 });

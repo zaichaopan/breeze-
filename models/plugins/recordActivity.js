@@ -32,6 +32,6 @@ module.exports = (schema) => {
                 kind: this.constructor.modelName,
                 item: this._id
             }
-        });
+        }).populate('subject.item');
     };
 };

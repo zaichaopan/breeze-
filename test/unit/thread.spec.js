@@ -1,4 +1,4 @@
-const expect = require('expect');
+const expect = require('chai').expect;
 const userFactory = require('../../db/factories/user');
 const threadFactory = require('../../db/factories/thread');
 const Activity = require('../../models/activity');
@@ -14,56 +14,46 @@ describe('thread model', function () {
         });
 
         describe('when thread created', function () {
-            it('records automatically', function (done) {
-                threadFactory.create().then(thread => {
-                    Activity.findOne({
-                            subject: {
-                                kind: 'thread',
-                                item: thread._id
-                            }
-                        })
-                        .then(activity => {
-                            expect(activity).not.toBe(null);
-                            done();
-                        })
-                        .catch(err => done());
-                }).catch(err => done());
+            it('records automatically', async function () {
+                let thread = await threadFactory.create();
+                let activity = Activity.findOne({
+                    subject: {
+                        kind: 'thread',
+                        item: thread._id
+                    }
+                });
+
+                expect(activity).to.not.be.null;
             });
         });
 
         describe('activity method', function () {
-            it('should get all recorded activity of a thread', function (done) {
-                threadOne.activity().then(activity => {
-                    expect(activity.length).toEqual(1);
-                    expect(activity[0].subject.item._id.toString()).toEqual(threadOne._id.toString());
-                    done();
-                }).catch(err => done());
+            it('should get all recorded activity of a thread', async function () {
+                let activity = await threadOne.activity();
+                expect(activity.length).to.equal(1);
+                expect(activity[0].subject.item._id.toString()).to.equal(threadOne._id.toString());
             });
         });
 
         describe('when thread removes', function () {
-            it('should its activity', function (done) {
-                threadOne.remove()
-                    .then(result => {
-                        Activity.find({
-                                subject: {
-                                    kind: 'thread',
-                                    item: threadOne._id
-                                }
-                            })
-                            .then(activity => {
-                                expect(activity).toBe(null);
-                                Activity.find({
-                                        subject: {
-                                            kind: 'thread',
-                                            item: threadTwo._id
-                                        }
-                                    })
-                                    .then(activity => {
-                                        expect(activity).not.toBe(null);
-                                    }).catch(err => done());
-                            }).catch(err => done());
-                    }).catch(err => done());
+            it('should its activity', async function () {
+                await threadOne.remove();
+                let threadOneActivity = await Activity.find({
+                    subject: {
+                        kind: 'thread',
+                        item: threadOne._id
+                    }
+                });
+
+                let threadTwoActivity = await Activity.find({
+                    subject: {
+                        kind: 'thread',
+                        item: threadTwo._id
+                    }
+                });
+
+                expect(threadOneActivity).to.be.empty;
+                expect(threadTwoActivity).to.not.be.null;
             });
         });
     });
@@ -84,27 +74,25 @@ describe('thread model', function () {
         });
 
         describe('when not token', function () {
-            it('adds a slug using sluggables', function (done) {
-                threadFactory.create({
+            it('adds a slug using sluggables', async function () {
+                let thread = await threadFactory.create({
                     title: 'bar baz',
                     author: user._id
-                }).then(thread => {
-                    expect(thread.slug).toEqual('bar-baz');
-                    done();
-                }).catch(err => done());
+                });
+
+                expect(thread.slug).to.equal('bar-baz');
             });
         });
 
         describe('when token', function () {
-            it('add a slug using sluggables and current time stamp', function (done) {
-                threadFactory.create({
+            it('add a slug using sluggables and current time stamp', async function () {
+                let thread = await threadFactory.create({
                     title: 'foo bar',
                     author: user._id
-                }).then(thread => {
-                    expect(thread.slug.includes('foo-bar')).toBeTruthy();
-                    expect(thread.slug).not.toBe('foo-bar');
-                    done();
-                }).catch(err => done());
+                });
+
+                expect(thread.slug.includes('foo-bar')).to.be.true;
+                expect(thread.slug).to.not.equal('foo-bar');
             });
         });
     });

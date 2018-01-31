@@ -1,5 +1,5 @@
 const app = require('../../app');
-const expect = require('expect');
+const expect = require('chai').expect;
 const request = require('supertest');
 const Thread = require('../../models/thread');
 const threadFactory = require('../../db/factories/thread');
@@ -47,34 +47,22 @@ describe('threads', function () {
     });
 
     describe('GET /threads', function () {
-        it('should display a list of threads', function (done) {
-            request(app).get('/threads')
-                .set('Accept', 'application/json')
-                .expect('Content-Type', /json/)
-                .end((err, res) => {
-                    if (err) {
-                        return done(err);
-                    }
-                    expect(res.body.threads.map(item => item._id.toString())).toContain(threadByJane._id.toString());
-                    done();
-                });
+        it('should display a list of threads', async function () {
+            const res = await request(app).get('/threads')
+                .set('Accept', 'application/json');
+
+            expect(res.body.threads.map(item => item._id.toString())).to.include(threadByJane._id.toString());
         });
     });
 
     describe('GET /threads/:id', function () {
         describe('when present', function () {
-            it('should display the thread', function (done) {
-                request(app)
+            it('should display the thread', async function () {
+                const res = await request(app)
                     .get(`/threads/${threadByJane._id}`)
-                    .set('Accept', 'application/json')
-                    .expect('Content-Type', /json/)
-                    .end((err, res) => {
-                        if (err) {
-                            return done();
-                        }
-                        expect(res.body.thread._id.toString()).toEqual(threadByJane._id.toString());
-                        done();
-                    });
+                    .set('Accept', 'application/json');
+
+                expect(res.body.thread._id.toString()).to.equal(threadByJane._id.toString());
             });
         });
 
@@ -82,7 +70,7 @@ describe('threads', function () {
             it('should 404', function (done) {
                 request(app)
                     .get('/threads/abcd')
-                    .expect(404, done)
+                    .expect(404, done);
             });
         })
     });
@@ -124,38 +112,31 @@ describe('threads', function () {
                         .send({
                             title: undefined,
                             body: undefined
-                        })
-                        .expect(302, done);
+                        }).expect(302, done);
                 });
             });
 
             describe('when title and body present', function () {
-                it('should create a thread for user', function (done) {
-                    loginAsJane
+                it('should create a thread for user', async function () {
+                    const res = await loginAsJane
                         .post('/threads')
                         .send({
                             title: 'Hello',
                             body: 'Foobar'
-                        })
-                        .end(function (err, res) {
-                            if (err) {
-                                return done();
-                            }
-                            Thread.findOne({
-                                title: 'Hello',
-                                body: 'Foobar'
-                            }).then(thread => {
-                                expect(thread.title).toEqual('Hello');
-                                expect(thread.body).toEqual('Foobar');
-                                expect(thread.author.toString()).toEqual(jane._id.toString())
-                                done();
-                            }).catch(done);
                         });
+
+                    let thread = await Thread.findOne({
+                        title: 'Hello',
+                        body: 'Foobar'
+                    });
+
+                    expect(thread.title).to.be.equal('Hello');
+                    expect(thread.body).to.be.equal('Foobar');
+                    expect(thread.author.toString()).to.equal(jane._id.toString())
                 });
             });
         });
     });
-
 
     describe('GET /threads/:id/edit', function () {
         describe('when login', function () {
@@ -163,7 +144,7 @@ describe('threads', function () {
                 it('should get 403', function (done) {
                     loginAsJane
                         .get(`/threads/${threadByJohn._id}/edit`)
-                        .expect(403, done)
+                        .expect(403, done);
                 });
             });
 
@@ -171,7 +152,7 @@ describe('threads', function () {
                 it('should display the edit form', function (done) {
                     loginAsJane
                         .get(`/threads/${threadByJane._id}/edit`)
-                        .expect(200, done)
+                        .expect(200, done);
                 });
             });
         });
@@ -181,7 +162,7 @@ describe('threads', function () {
                 request(app)
                     .get(`/threads/${threadByJohn._id}/edit`)
                     .expect('Location', '/login')
-                    .expect(302, done)
+                    .expect(302, done);
             });
         });
     });
@@ -208,25 +189,20 @@ describe('threads', function () {
                 });
 
                 describe('when title and body present', function () {
-                    it('should get thread for the creator', function (done) {
-                        loginAsJane
+                    it('should get thread for the creator', async function () {
+                        const res = await loginAsJane
                             .post(`/threads/${threadByJane._id}?_method=PUT`)
                             .send({
                                 title: 'new title',
                                 body: 'new body'
-                            })
-                            .end(function (err, res) {
-                                if (err) {
-                                    return done;
-                                }
-                                Thread.findOne({
-                                    _id: threadByJane._id
-                                }).then(newThread => {
-                                    expect(newThread.title).toEqual('new title');
-                                    expect(newThread.body).toEqual('new body');
-                                    done()
-                                });
                             });
+
+                        let newThread = await Thread.findOne({
+                            _id: threadByJane._id
+                        });
+
+                        expect(newThread.title).to.equal('new title');
+                        expect(newThread.body).to.equal('new body');
                     });
                 });
             })
@@ -266,24 +242,16 @@ describe('threads', function () {
 
             describe('when present', function () {
                 describe('when it is creator', function () {
-                    it('should remove the thread for the creator', function (done) {
-                        loginAsJane
+                    it('should remove the thread for the creator', async function () {
+                        const res = await loginAsJane
                             .post(`/threads/${threadByJane._id}?_method=DELETE`)
-                            .send({})
-                            .end(function (err, res) {
-                                if (err) {
-                                    console.log(err);
-                                    return done();
-                                }
-                                Thread.findOne({
-                                    _id: threadByJane._id
-                                }).then(item => {
-                                    expect(item).toBeNull();
-                                    done();
-                                }).catch(err => {
-                                    console.log(err);
-                                });
-                            });
+                            .send({});
+
+                        let data = await Thread.findOne({
+                            _id: threadByJane._id
+                        });
+
+                        expect(data).to.be.null;
                     });
                 });
 

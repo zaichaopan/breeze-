@@ -6,6 +6,7 @@ module.exports = (controller) => {
         index: 'get',
         create: 'get',
         store: 'post',
+        show: 'get',
         edit: 'get',
         update: 'put',
         destroy: 'delete'
