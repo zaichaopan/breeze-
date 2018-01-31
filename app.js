@@ -25,7 +25,7 @@ app.use(methodOverride('_method'));
 
 app.use(flash());
 
-require('./config/boot')(app, {
+require('./config/db')(app, {
     verbose: !module.parent
 });
 

@@ -42,7 +42,7 @@ module.exports = {
     },
 
     show: {
-        url: '/threads/:_id',
+        url: '/threads/:threadId',
         before: [
             asyncWrapper(loadModel({
                 model: 'thread'
@@ -63,7 +63,7 @@ module.exports = {
     },
 
     edit: {
-        url: '/threads/:_id/edit',
+        url: '/threads/:threadId/edit',
         before: [
             auth,
             asyncWrapper(loadModel({
@@ -90,7 +90,7 @@ module.exports = {
     },
 
     update: {
-        url: '/threads/:_id',
+        url: '/threads/:threadId',
         before: [
             auth,
             asyncWrapper(loadModel({
@@ -110,7 +110,7 @@ module.exports = {
     },
 
     destroy: {
-        url: '/threads/:_id',
+        url: '/threads/:threadId',
         before: [
             auth,
             asyncWrapper(loadModel({

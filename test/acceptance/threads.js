@@ -55,7 +55,7 @@ describe('threads', function () {
         });
     });
 
-    describe('GET /threads/:id', function () {
+    describe('GET /threads/:threadId', function () {
         describe('when present', function () {
             it('should display the thread', async function () {
                 const res = await request(app)
@@ -138,7 +138,7 @@ describe('threads', function () {
         });
     });
 
-    describe('GET /threads/:id/edit', function () {
+    describe('GET /threads/:threadId/edit', function () {
         describe('when login', function () {
             describe('when not owner', function () {
                 it('should get 403', function (done) {
@@ -167,7 +167,7 @@ describe('threads', function () {
         });
     });
 
-    describe('PUT /threads/:id', function () {
+    describe('PUT /threads/:threadId', function () {
         describe('when login', function () {
             describe('when not creator', function () {
                 it('should get 403', function (done) {
@@ -219,7 +219,7 @@ describe('threads', function () {
         });
     });
 
-    describe('Delete /threads/:id', function () {
+    describe('Delete /threads/:threadId', function () {
         describe('when not login', function () {
             it('should redirect to login', function (done) {
                 request(app)
