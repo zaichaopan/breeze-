@@ -19,11 +19,15 @@ module.exports = {
             let {
                 body: {
                     body
+                },
+                user: {
+                    _id: author
                 }
             } = req;
 
             await req.thread.addComment({
-                body
+                body,
+                author
             });
 
             res.redirect(`/threads/${req.thread._id}`);
