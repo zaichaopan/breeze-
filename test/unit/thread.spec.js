@@ -5,12 +5,21 @@ const {
     expect
 } = require('chai');
 
+
+const {
+    clearDb
+} = require('../helper');
+
 describe('thread model', function () {
+    this.timeout(5000);
+
     describe('record activity plugin', function () {
         let threadOne;
         let threadTwo;
 
         before(async function () {
+            await clearDb();
+
             threadOne = await threadFactory.create();
             threadTwo = await threadFactory.create();
         });
@@ -32,6 +41,7 @@ describe('thread model', function () {
         describe('activity method', function () {
             it('should get all recorded activity of a thread', async function () {
                 let activity = await threadOne.activity();
+
                 expect(activity.length).to.equal(1);
                 expect(activity[0].subject.item._id.toString()).to.equal(threadOne._id.toString());
             });

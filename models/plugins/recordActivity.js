@@ -6,6 +6,10 @@ module.exports = (schema) => {
             _id
         } = user;
 
+        if (!_id) {
+            return next();
+        }
+
         let kind = this.constructor.modelName;
         let type = `created_${kind}`;
         let activity = new Activity({

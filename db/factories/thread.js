@@ -16,10 +16,11 @@ exports.create = async (override = {}) => {
     } = override;
 
     if (!author) {
-        let author = await userFactory.create();
+        author = await userFactory.create();
+
         thread.author = author._id;
     }
 
-    await thread.save();
+    await thread.save(author);
     return thread;
 };

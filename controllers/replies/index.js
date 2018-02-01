@@ -18,14 +18,14 @@ module.exports = {
         handler: asyncWrapper(async (req, res, next) => {
             let {
                 body: {
-                    body
+                    body = ''
                 },
                 user: {
                     _id: author
                 }
             } = req;
 
-            await req.thread.addComment({
+            await req.thread.addReply({
                 body,
                 author
             });
@@ -35,7 +35,7 @@ module.exports = {
     },
 
     update: {
-        url: '/thread/:threadId/replies/replyId',
+        url: '/threads/:threadId/replies/:replyId',
 
         before: [
             auth,
@@ -61,7 +61,7 @@ module.exports = {
     },
 
     destroy: {
-        url: '/thread/:threadId/replies/replyId',
+        url: '/threads/:threadId/replies/:replyId',
 
         before: [
             auth,

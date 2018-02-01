@@ -5,11 +5,14 @@ const {
     expect
 } = require('chai');
 
+const {clearDb} = require('../helper');
+
 describe('activity model', function () {
     let thread;
     let user;
 
     before(async function () {
+        await clearDb();
         user = new User({
             email: 'jane@example.com',
             name: 'jame'

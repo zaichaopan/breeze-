@@ -7,12 +7,13 @@ const {
     expect
 } = require('chai');
 const {
-    loginAs
+    loginAs, clearDb
 } = require('../helper');
 
 
 describe('threads', function () {
     this.timeout(5000);
+
 
     let jane;
     let john;
@@ -22,10 +23,13 @@ describe('threads', function () {
 
 
     before(async function () {
+        await clearDb();
+
         jane = await userFactory.create({
             email: 'jane@example.com',
             password: 'password'
         });
+
         john = await userFactory.create({
             email: 'john@example.com',
             password: 'password'
