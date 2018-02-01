@@ -12,7 +12,7 @@ const {
 
 describe('replies', function () {
     let thread;
-    let john;
+    let john
     let jane;
     let commentByJohn;
     let loginAsJohn;
