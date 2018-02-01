@@ -10,6 +10,7 @@ module.exports = {
 
         before: [
             auth,
+            
             asyncWrapper(loadModel({
                 model: 'thread'
             }))
