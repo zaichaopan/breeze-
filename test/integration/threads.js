@@ -14,7 +14,6 @@ const {
 describe('threads', function () {
     this.timeout(5000);
 
-
     let jane;
     let john;
     let threadByJane;

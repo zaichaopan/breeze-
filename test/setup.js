@@ -4,9 +4,6 @@ mongoose.Promise = global.Promise;
 const promisify = require('es6-promisify');
 const userFactory = require('../db/factories/user');
 const User = require('../models/user');
-const {
-    clearDb
-} = require('./helper');
 
 before(async function () {
     mongoose.connect(process.env.TEST_DATABASE, {
@@ -16,7 +13,5 @@ before(async function () {
     await mongoose.connection
         .once('open', () => console.log('Good to go!'))
         .on('error', error => console.warn('warning', error));
-
-    await clearDb();
 });
 

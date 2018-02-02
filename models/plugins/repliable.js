@@ -11,7 +11,7 @@ module.exports = (schema) => {
                 item: this._id
             }
         });
-    }
+    };
 
     schema.methods.replies = function () {
         return this.model('reply').find({

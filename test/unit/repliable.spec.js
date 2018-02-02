@@ -12,6 +12,7 @@ describe('repliable plugin', function () {
 
     beforeEach(async function () {
         await clearDb();
+
         thread = await threadFactory.create();
     });
 

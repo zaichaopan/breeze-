@@ -5,7 +5,6 @@ const {
     expect
 } = require('chai');
 
-
 const {
     clearDb
 } = require('../helper');
@@ -13,13 +12,15 @@ const {
 describe('thread model', function () {
     this.timeout(5000);
 
+    before(async function() {
+        await clearDb();
+    });
+
     describe('record activity plugin', function () {
         let threadOne;
         let threadTwo;
 
         before(async function () {
-            await clearDb();
-
             threadOne = await threadFactory.create();
             threadTwo = await threadFactory.create();
         });
