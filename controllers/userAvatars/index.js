@@ -2,9 +2,10 @@ const jimp = require('jimp');
 const uuid = require('uuid');
 const multer = require('multer');
 const asyncWrapper = require('../../helper/asyncWrapper');
+const auth = require('../../middlewares/auth');
 
 const multerOptions = {
-    storage: multer.memoryStorage,
+    storage: multer.MemoryStorage,
     fileFilter(req, file, next) {
         const isPhoto = file.mimetype.startsWith('image/');
 
@@ -22,20 +23,25 @@ const resize = async (req, res, next) => {
     }
 
     const extension = req.file.mimetype.split('/')[1];
-    req.body.photo = `${uuid.v4()}.${extension}`;
-    const photo = await jimp.read(req.file.buffer);
-    await photo.resize(800, jimp.AUTO);
-    await photo.write(`./public/uploads/${req.body.photo}`);
+    req.body.avatar = `${uuid.v4()}.${extension}`;
+    const avatar = await jimp.read(req.file.buffer);
+    await avatar.resize(800, jimp.AUTO);
+    await avatar.write(`./public/uploads/avatars/${req.body.avatar}`);
     next();
 };
 
 module.exports = {
     store: {
-        url: '/users/:userId/avatars',
-        before: [auth, multer(multerOptions).single('photo'), resize],
+        url: '/users/avatars',
+        before: [auth, multer(multerOptions).single('avatar'), resize],
         handler: asyncWrapper(async (req, res, next) => {
-            await req.user.update({ photo: req.photo });
-            res.direct('back');
+            if (!req.body.avatar) {
+                req.flash('error', 'Please provide a valid avatar!');
+                return res.redirect('back');
+            }
+
+            await req.user.update({ avatar: req.body.avatar });
+            res.redirect('back');
         })
     }
 };

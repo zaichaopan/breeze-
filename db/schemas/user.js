@@ -1,6 +1,4 @@
-const {
-    Schema
-} = require('mongoose');
+const { Schema } = require('mongoose');
 
 module.exports = new Schema({
     email: {
@@ -15,4 +13,7 @@ module.exports = new Schema({
         required: 'Please Supply a name',
         trim: true
     },
+    avatar: {
+        type: String
+    }
 });

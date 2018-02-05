@@ -67,6 +67,8 @@ app.use((err, req, res, next) => {
 });
 
 app.use((req, res, next) => {
+
+    console.log(res.locals.flashes);
     if (res.statusCode === 403) {
         return res.render('errors/403', {
             url: req.originalUrl

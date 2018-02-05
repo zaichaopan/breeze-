@@ -3,6 +3,7 @@ const resource = require('../helper/resource');
 const loginController = require('../auth/login');
 const threadsController = require('../controllers/threads');
 const repliesController = require('../controllers/replies');
+const userAvatars = require('../controllers/userAvatars');
 
 
 module.exports = (parent) => {
@@ -14,5 +15,6 @@ module.exports = (parent) => {
 
     app.use(resource(threadsController));
     app.use(resource(repliesController));
+    app.use(resource(userAvatars));
     parent.use(app);
 }

@@ -4,8 +4,8 @@ const Thread = require('../../models/thread');
 const Reply = require('../../models/reply');
 const threadFactory = require('../../db/factories/thread');
 const userFactory = require('../../db/factories/user');
-const {expect} = require('chai');
-const {loginAs, clearDb} = require('../helper');
+const { expect } = require('chai');
+const { loginAs, clearDb } = require('../helper');
 
 describe('replies', function() {
     this.timeout(5000);
