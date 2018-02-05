@@ -1,25 +1,11 @@
+const path = require('path');
 const app = require('../../app');
 const { expect } = require('chai');
+const User = require('../../models/user');
 const request = require('supertest');
 const userFactory = require('../../db/factories/user');
 const { loginAs, clearDb } = require('../helper');
-const path = require('path');
-const fs = require('fs');
-const User = require('../../models/user');
-
-const deleteFolderRecursive = function(path) {
-    if (fs.existsSync(path)) {
-        fs.readdirSync(path).forEach(function(file, index) {
-            var curPath = path + '/' + file;
-            if (fs.lstatSync(curPath).isDirectory()) {
-                deleteFolderRecursive(curPath);
-            } else {
-                fs.unlinkSync(curPath);
-            }
-        });
-        fs.rmdirSync(path);
-    }
-};
+const { clearDisk, fileExists } = require('../../helper/storage');
 
 describe.only('user avatar', function() {
     this.timeout(5000);
@@ -83,14 +69,14 @@ describe.only('user avatar', function() {
                             'public/uploads/avatars'
                         );
 
-                        fs.existsSync(avatarDir) &&
-                            deleteFolderRecursive(avatarDir);
+                        clearDisk(avatarDir);
 
                         let file = path.join(
                             __dirname,
                             '..',
                             'fixtures/test.jpg'
                         );
+
                         await loginAsJohn
                             .post('/users/avatars')
                             .attach('avatar', file);
@@ -108,10 +94,8 @@ describe.only('user avatar', function() {
                             avatarPath
                         );
 
-                        expect(fs.existsSync(avatarPath)).to.be.true;
-
-                        fs.existsSync(avatarDir) &&
-                            deleteFolderRecursive(avatarDir);
+                        expect(fileExists(avatarPath)).to.be.true;
+                        clearDisk(avatarDir);
                     });
                 });
             });
