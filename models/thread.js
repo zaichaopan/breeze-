@@ -6,7 +6,7 @@ const recordActivity = require('./plugins/recordActivity');
 const repliable = require('./plugins/repliable');
 const Activity = require('./activity');
 
-threadSchema.virtual('sluggables').get(function () {
+threadSchema.virtual('sluggables').get(function() {
     return ['title'];
 });
 

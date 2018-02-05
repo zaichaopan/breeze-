@@ -4,16 +4,10 @@ const Thread = require('../../models/thread');
 const Reply = require('../../models/reply');
 const threadFactory = require('../../db/factories/thread');
 const userFactory = require('../../db/factories/user');
-const {
-    expect
-} = require('chai');
-const {
-    loginAs,
-    clearDb
-} = require('../helper');
+const {expect} = require('chai');
+const {loginAs, clearDb} = require('../helper');
 
-
-describe('replies', function () {
+describe('replies', function() {
     this.timeout(5000);
 
     let john;
@@ -22,7 +16,7 @@ describe('replies', function () {
     let replyByJohn;
     let loginAsJohn;
 
-    before(async function () {
+    before(async function() {
         await clearDb();
 
         john = await userFactory.create({
@@ -47,12 +41,9 @@ describe('replies', function () {
         });
     });
 
-
-
-
-    describe('STORE /threads/:threadId/replies', function () {
-        describe('when not login', function () {
-            it('Should redirect to login', function (done) {
+    describe('STORE /threads/:threadId/replies', function() {
+        describe('when not login', function() {
+            it('Should redirect to login', function(done) {
                 request(app)
                     .post(`/threads/${thread._id}/replies`)
                     .send({})
@@ -61,9 +52,9 @@ describe('replies', function () {
             });
         });
 
-        describe('when login', function () {
-            describe('when reply body not exist', function () {
-                it('it should get 302', function (done) {
+        describe('when login', function() {
+            describe('when reply body not exist', function() {
+                it('it should get 302', function(done) {
                     loginAsJohn
                         .post(`/threads/${thread._id}/replies`)
                         .send({})
@@ -71,8 +62,8 @@ describe('replies', function () {
                 });
             });
 
-            describe('when reply body exist', function () {
-                it('it should create reply to a thread for user', async function () {
+            describe('when reply body exist', function() {
+                it('it should create reply to a thread for user', async function() {
                     const res = await loginAsJohn
                         .post(`/threads/${thread._id}/replies`)
                         .send({
@@ -80,118 +71,153 @@ describe('replies', function () {
                         });
 
                     let replies = await thread.replies();
-                    let reply = replies.find(reply => reply.body === 'new reply');
-                    expect(reply.author.toString()).to.include(john._id.toString());
+                    let reply = replies.find(
+                        reply => reply.body === 'new reply'
+                    );
+                    expect(reply.author.toString()).to.include(
+                        john._id.toString()
+                    );
                 });
             });
         });
     });
 
-    describe('PUT /threads/:threadId/replies/:replyId', function () {
-        describe('when not login', function () {
-            it('Should redirect to login', function (done) {
+    describe('PUT /threads/:threadId/replies/:replyId', function() {
+        describe('when not login', function() {
+            it('Should redirect to login', function(done) {
                 request(app)
-                    .post(`/threads/${thread._id}/replies/${replyByJohn._id}?_method=PUT`)
+                    .post(
+                        `/threads/${thread._id}/replies/${
+                            replyByJohn._id
+                        }?_method=PUT`
+                    )
                     .expect('Location', '/login')
-                    .expect(302, done)
+                    .expect(302, done);
             });
         });
 
-        describe('when login', function () {
-            describe('when reply not found', function () {
-                it('should get 404', function (done) {
+        describe('when login', function() {
+            describe('when reply not found', function() {
+                it('should get 404', function(done) {
                     loginAsJohn
                         .post(`/threads/${thread._id}/replies/abc?_method=PUT`)
                         .expect(404, done);
                 });
             });
 
-            describe('when reply found', function () {
-                describe('when not author', function () {
-                    it('should get 403', async function () {
+            describe('when reply found', function() {
+                describe('when not author', function() {
+                    it('should get 403', async function() {
                         let replyByJane = await thread.addReply({
                             body: 'foobar',
                             author: jane._id
                         });
 
-                        const res = await loginAsJohn.post(
-                            `/threads/${thread._id}/replies/${replyByJane._id}?_method=PUT`
-                        ).send({});
+                        const res = await loginAsJohn
+                            .post(
+                                `/threads/${thread._id}/replies/${
+                                    replyByJane._id
+                                }?_method=PUT`
+                            )
+                            .send({});
 
                         expect(res.status).to.be.equal(403);
-                    })
+                    });
                 });
 
-                describe('when author', function () {
-                    describe('when reply body not exist', function () {
-                        it('it should get 302', function (done) {
+                describe('when author', function() {
+                    describe('when reply body not exist', function() {
+                        it('it should get 302', function(done) {
                             loginAsJohn
-                                .post(`/threads/${thread._id}/replies/${replyByJohn._id}?_method=PUT`)
+                                .post(
+                                    `/threads/${thread._id}/replies/${
+                                        replyByJohn._id
+                                    }?_method=PUT`
+                                )
                                 .send({})
                                 .expect(302, done);
-                        })
+                        });
                     });
 
-                    describe('when reply body exist', function () {
-                        it('it should update reply to a thread for user', async function () {
+                    describe('when reply body exist', function() {
+                        it('it should update reply to a thread for user', async function() {
                             expect(replyByJohn.body).to.be.equal('foobar');
                             const res = await loginAsJohn
-                                .post(`/threads/${thread._id}/replies/${replyByJohn._id}?_method=PUT`)
+                                .post(
+                                    `/threads/${thread._id}/replies/${
+                                        replyByJohn._id
+                                    }?_method=PUT`
+                                )
                                 .send({
                                     body: 'update body'
                                 });
                             let updatedReply = await Reply.findOne({
                                 _id: replyByJohn._id
                             });
-                            expect(updatedReply.body).to.be.equal('update body');
+                            expect(updatedReply.body).to.be.equal(
+                                'update body'
+                            );
                         });
                     });
-                })
+                });
             });
         });
     });
 
-    describe('DELETE /threads/:threadId/replies/:replyId', function () {
-        describe('when not login', function () {
-            it('Should redirect to login', function (done) {
+    describe('DELETE /threads/:threadId/replies/:replyId', function() {
+        describe('when not login', function() {
+            it('Should redirect to login', function(done) {
                 request(app)
-                    .post(`/threads/${thread._id}/replies/${replyByJohn._id}?_method=DELETE`)
+                    .post(
+                        `/threads/${thread._id}/replies/${
+                            replyByJohn._id
+                        }?_method=DELETE`
+                    )
                     .expect('Location', '/login')
                     .expect(302, done);
             });
         });
 
-        describe('when login', function () {
-            describe('when reply not found', function () {
-                it('should get 404', function (done) {
+        describe('when login', function() {
+            describe('when reply not found', function() {
+                it('should get 404', function(done) {
                     loginAsJohn
-                        .post(`/threads/${thread._id}/replies/abc?_method=DELETE`)
+                        .post(
+                            `/threads/${thread._id}/replies/abc?_method=DELETE`
+                        )
                         .expect(404, done);
                 });
             });
 
-            describe('when reply found', function () {
-                describe('when not author', function () {
-                    it('should get 403', async function () {
-
+            describe('when reply found', function() {
+                describe('when not author', function() {
+                    it('should get 403', async function() {
                         let replyByJane = await thread.addReply({
                             body: 'foobar',
                             author: jane._id
                         });
 
-                        const res = await loginAsJohn.post(
-                            `/threads/${thread._id}/replies/${replyByJane._id}?_method=DELETE`
-                        ).send({});
+                        const res = await loginAsJohn
+                            .post(
+                                `/threads/${thread._id}/replies/${
+                                    replyByJane._id
+                                }?_method=DELETE`
+                            )
+                            .send({});
 
                         expect(res.status).to.be.equal(403);
-                    })
+                    });
                 });
 
-                describe('when author', function () {
-                    it('it should delete the reply', async function () {
-                        const res = await loginAsJohn.post(
-                            `/threads/${thread._id}/replies/${replyByJohn._id}?_method=DELETE`
-                        ).send({});
+                describe('when author', function() {
+                    it('it should delete the reply', async function() {
+                        const res = await loginAsJohn
+                            .post(
+                                `/threads/${thread._id}/replies/${
+                                    replyByJohn._id
+                                }?_method=DELETE`
+                            )
+                            .send({});
 
                         let result = await Reply.findOne({
                             _id: replyByJohn._id
@@ -199,7 +225,7 @@ describe('replies', function () {
 
                         expect(result).to.be.null;
                     });
-                })
+                });
             });
         });
     });

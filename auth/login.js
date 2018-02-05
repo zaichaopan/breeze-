@@ -1,8 +1,8 @@
 const passport = require('passport');
 
-const showLoginForm= (req, res) => res.render('auth/login');
+const showLoginForm = (req, res) => res.render('auth/login');
 
-const login= passport.authenticate('local', {
+const login = passport.authenticate('local', {
     failureRedirect: '/login',
     failureFlash: 'Failed Login',
     successRedirect: '/threads',
@@ -12,4 +12,4 @@ const login= passport.authenticate('local', {
 module.exports = {
     showLoginForm,
     login
-}
+};

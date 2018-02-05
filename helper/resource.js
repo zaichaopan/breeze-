@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-module.exports = (controller) => {
+module.exports = controller => {
     const orderedActions = {
         index: 'get',
         create: 'get',
@@ -23,14 +23,10 @@ module.exports = (controller) => {
 
         method = orderedActions[action];
 
-        let {
-            url,
-            before = [],
-            handler
-        } = controller[action];
+        let {url, before = [], handler} = controller[action];
 
         router[method](url, ...[...before, handler]);
     });
 
     return router;
-}
+};

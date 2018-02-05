@@ -1,10 +1,8 @@
 const Activity = require('../../models/activity');
 
-module.exports = (schema) => {
-    schema.pre('save', async function (next, user) {
-        let {
-            _id
-        } = user;
+module.exports = schema => {
+    schema.pre('save', async function(next, user) {
+        let {_id} = user;
 
         if (!_id) {
             return next();
@@ -25,17 +23,19 @@ module.exports = (schema) => {
         next();
     });
 
-    schema.pre('remove', async function (next) {
+    schema.pre('remove', async function(next) {
         await this.activity().remove();
         next();
     });
 
-    schema.methods.activity = function () {
-        return this.model('activity').find({
-            subject: {
-                kind: this.constructor.modelName,
-                item: this._id
-            }
-        }).populate('subject.item');
+    schema.methods.activity = function() {
+        return this.model('activity')
+            .find({
+                subject: {
+                    kind: this.constructor.modelName,
+                    item: this._id
+                }
+            })
+            .populate('subject.item');
     };
 };

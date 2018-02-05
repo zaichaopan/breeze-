@@ -7,38 +7,28 @@ const loadModel = require('../../middlewares/loadModel');
 module.exports = {
     index: {
         url: '/threads',
-
         handler: asyncWrapper(async (req, res, next) => {
             const threads = await Thread.find({});
-
             res.format({
                 html() {
-                    res.render('threads/index', {
-                        threads
-                    });
+                    res.render('threads/index', { threads });
                 },
                 json() {
-                    res.send({
-                        threads
-                    });
+                    res.send({ threads });
                 }
             });
-        }),
+        })
     },
 
     create: {
         url: '/threads/create',
-
         before: [auth],
-
         handler: (req, res, next) => res.render('threads/create')
     },
 
     store: {
         url: '/threads',
-
         before: [auth],
-
         handler: asyncWrapper(async (req, res, next) => {
             let thread = new Thread(req.body);
             thread.author = req.user._id;
@@ -49,73 +39,43 @@ module.exports = {
 
     show: {
         url: '/threads/:threadId',
-
-        before: [
-            asyncWrapper(loadModel({
-                model: 'thread'
-            }))
-        ],
-
-        handler: (req, res, next) => res.format({
-            html() {
-                res.render('threads/index', {
-                    thread: req.thread
-                });
-            },
-            json() {
-                res.send({
-                    thread: req.thread
-                });
-            }
-        })
+        before: [asyncWrapper(loadModel({ model: 'thread' }))],
+        handler: (req, res, next) =>
+            res.format({
+                html() {
+                    res.render('threads/index', { thread: req.thread });
+                },
+                json() {
+                    res.send({ thread: req.thread });
+                }
+            })
     },
 
     edit: {
         url: '/threads/:threadId/edit',
-
         before: [
             auth,
-
-            asyncWrapper(loadModel({
-                model: 'thread'
-            })),
-
-            checkOwner({
-                name: 'thread',
-                foreignKey: 'author'
-            }),
+            asyncWrapper(loadModel({ model: 'thread' })),
+            checkOwner({ name: 'thread', foreignKey: 'author' })
         ],
-
-        handler: (req, res, next) => res.format({
-            html() {
-                res.render('threads/edit', {
-                    thread: req.thread
-                });
-            },
-            json() {
-                res.send({
-                    thread: req.thread
-                });
-            }
-        })
+        handler: (req, res, next) =>
+            res.format({
+                html() {
+                    res.render('threads/edit', { thread: req.thread });
+                },
+                json() {
+                    res.send({ thread: req.thread });
+                }
+            })
     },
 
     update: {
         url: '/threads/:threadId',
-
         before: [
             auth,
-
-            asyncWrapper(loadModel({
-                model: 'thread'
-            })),
-
-            checkOwner({
-                name: 'thread',
-                foreignKey: 'author'
-            })
+            asyncWrapper(loadModel({ model: 'thread' })),
+            checkOwner({ name: 'thread', foreignKey: 'author' })
         ],
-
         handler: asyncWrapper(async (req, res, next) => {
             let thread = req.thread;
             await thread.update(req.body);
@@ -126,24 +86,15 @@ module.exports = {
 
     destroy: {
         url: '/threads/:threadId',
-
         before: [
             auth,
-
-            asyncWrapper(loadModel({
-                model: 'thread'
-            })),
-
-            checkOwner({
-                name: 'thread',
-                foreignKey: 'author'
-            }),
+            asyncWrapper(loadModel({ model: 'thread' })),
+            checkOwner({ name: 'thread', foreignKey: 'author' })
         ],
-
         handler: asyncWrapper(async (req, res, next) => {
             let thread = req.thread;
             await thread.remove();
             res.redirect('/threads');
         })
     }
-}
+};
