@@ -13,6 +13,8 @@ module.exports = new Schema({
         required: 'Please Supply a name',
         trim: true
     },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
     avatar: {
         type: String
     }

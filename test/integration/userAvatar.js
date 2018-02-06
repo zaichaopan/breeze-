@@ -7,7 +7,7 @@ const userFactory = require('../../db/factories/user');
 const { loginAs, clearDb } = require('../helper');
 const { clearDisk, fileExists } = require('../../helper/storage');
 
-describe.only('user avatar', function() {
+describe('user avatar', function() {
     this.timeout(5000);
 
     let john;
@@ -27,7 +27,7 @@ describe.only('user avatar', function() {
         });
     });
 
-    describe.only('POST /users/avatars', function() {
+    describe('POST /users/avatars', function() {
         describe('when not login', function() {
             it('should redirect to login', function(done) {
                 request(app)
