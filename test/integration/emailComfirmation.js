@@ -5,7 +5,7 @@ const { clearDb } = require('../helper');
 const userFactory = require('../../db/factories/user');
 const User = require('../../models/user');
 
-describe.only('email confirmation', function() {
+describe('email confirmation', function() {
     let user;
 
     beforeEach(async function() {
