@@ -94,7 +94,7 @@ module.exports = {
         const register = promisify(User.register, User);
 
         user.confirmation_token = crypto.randomBytes(20).toString('hex');
-        user.confirmation_expire_at = Date.now() + 3600000; // 1 hour from now
+        user.confirmation_expire_at = Date.now() + 3600000;
 
         await register(user, req.body.password);
 

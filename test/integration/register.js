@@ -7,7 +7,7 @@ const app = require('../../app');
 const { loginAs, clearDb } = require('../helper');
 const mail = require('../../helper/mail');
 
-describe.only('register', function() {
+describe('register', function() {
     this.timeout(5000);
 
     let john;
@@ -37,7 +37,7 @@ describe.only('register', function() {
         });
     });
 
-    describe.only('when not login', function() {
+    describe('when not login', function() {
         describe('when name not valid', function() {
             it('should get 422', async function() {
                 let res = await request(app)
@@ -154,10 +154,9 @@ describe.only('register', function() {
             });
         });
 
-        describe.only('when register with valid data', function() {
+        describe('when register with valid data', function() {
             it('should register a new user with given data and send registration confirmation', async function() {
-               // mail.fake();
-
+                mail.fake();
                 let res = await request(app)
                     .post('/register')
                     .send({
@@ -174,7 +173,7 @@ describe.only('register', function() {
                 });
 
                 expect(newUser).to.be.not.null;
-              //  expect(mail.hasSentTo('jane@example.com')).to.be.true;
+                expect(mail.hasSentTo('jane@example.com')).to.be.true;
             });
         });
     });
