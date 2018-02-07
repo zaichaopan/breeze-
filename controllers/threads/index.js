@@ -7,7 +7,7 @@ const loadModel = require('../../middlewares/loadModel');
 module.exports = {
     index: {
         url: '/threads',
-        handler: asyncWrapper(async (req, res, next) => {
+        handler: asyncWrapper(async (req, res) => {
             const threads = await Thread.find({});
             res.format({
                 html() {
@@ -23,13 +23,13 @@ module.exports = {
     create: {
         url: '/threads/create',
         before: [auth],
-        handler: (req, res, next) => res.render('threads/create')
+        handler: (req, res) => res.render('threads/create')
     },
 
     store: {
         url: '/threads',
         before: [auth],
-        handler: asyncWrapper(async (req, res, next) => {
+        handler: asyncWrapper(async (req, res) => {
             let thread = new Thread(req.body);
             thread.author = req.user._id;
             await thread.save(req.user);
@@ -40,7 +40,7 @@ module.exports = {
     show: {
         url: '/threads/:threadId',
         before: [asyncWrapper(loadModel({ model: 'thread' }))],
-        handler: (req, res, next) =>
+        handler: (req, res) =>
             res.format({
                 html() {
                     res.render('threads/index', { thread: req.thread });
@@ -58,7 +58,7 @@ module.exports = {
             asyncWrapper(loadModel({ model: 'thread' })),
             checkOwner({ name: 'thread', foreignKey: 'author' })
         ],
-        handler: (req, res, next) =>
+        handler: (req, res) =>
             res.format({
                 html() {
                     res.render('threads/edit', { thread: req.thread });
@@ -76,7 +76,7 @@ module.exports = {
             asyncWrapper(loadModel({ model: 'thread' })),
             checkOwner({ name: 'thread', foreignKey: 'author' })
         ],
-        handler: asyncWrapper(async (req, res, next) => {
+        handler: asyncWrapper(async (req, res) => {
             let thread = req.thread;
             await thread.update(req.body);
             await thread.save();
@@ -91,7 +91,7 @@ module.exports = {
             asyncWrapper(loadModel({ model: 'thread' })),
             checkOwner({ name: 'thread', foreignKey: 'author' })
         ],
-        handler: asyncWrapper(async (req, res, next) => {
+        handler: asyncWrapper(async (req, res) => {
             let thread = req.thread;
             await thread.remove();
             res.redirect('/threads');

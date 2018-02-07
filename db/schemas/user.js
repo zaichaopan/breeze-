@@ -11,10 +11,14 @@ module.exports = new Schema({
     name: {
         type: String,
         required: 'Please Supply a name',
+        unique:true,
         trim: true
     },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
+    confirmed: { type: Boolean, default: false },
+    confirmationToken: String,
+    confirmationExpires: Date,
     avatar: {
         type: String
     }

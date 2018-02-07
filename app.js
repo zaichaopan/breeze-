@@ -5,21 +5,26 @@ const flash = require('connect-flash');
 const bodyParse = require('body-parser');
 const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
+const expressValidator = require('express-validator');
 const isProd = process.env.NODE_ENV === 'production';
 const promisify = require('es6-promisify');
-const app = module.exports = express();
+const app = (module.exports = express());
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, '/views'));
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+app.use(expressValidator());
+
 app.use(cookieParser());
 
 app.use(bodyParse.json());
-app.use(bodyParse.urlencoded({
-    extended: true
-}));
+app.use(
+    bodyParse.urlencoded({
+        extended: true
+    })
+);
 
 app.use(methodOverride('_method'));
 
@@ -56,7 +61,9 @@ require('./routes')(app);
 app.use((err, req, res, next) => {
     if (!err.errors) return next(err);
     const errorKeys = Object.keys(err.errors);
-    const errors = errorKeys.forEach(key => req.flash('error', err.errors[key].message));
+    const errors = errorKeys.forEach(key =>
+        req.flash('error', err.errors[key].message)
+    );
     res.locals.flashes = req.flash();
     res.redirect('back');
 });
@@ -67,8 +74,6 @@ app.use((err, req, res, next) => {
 });
 
 app.use((req, res, next) => {
-
-    console.log(res.locals.flashes);
     if (res.statusCode === 403) {
         return res.render('errors/403', {
             url: req.originalUrl

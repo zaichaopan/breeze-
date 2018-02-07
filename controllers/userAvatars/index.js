@@ -34,7 +34,7 @@ module.exports = {
     store: {
         url: '/users/avatars',
         before: [auth, multer(multerOptions).single('avatar'), resize],
-        handler: asyncWrapper(async (req, res, next) => {
+        handler: asyncWrapper(async (req, res) => {
             if (!req.body.avatar) {
                 req.flash('error', 'Please provide a valid avatar!');
                 return res.redirect('back');
