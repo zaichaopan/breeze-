@@ -4,7 +4,7 @@ const { clearDb } = require('../helper');
 const request = require('supertest');
 const app = require('../../app');
 
-describe.only('login', function() {
+describe('login', function() {
     beforeEach(async function() {
         await clearDb();
     });
