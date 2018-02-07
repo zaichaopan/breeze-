@@ -1,7 +1,7 @@
 const User = require('../../models/user');
 const asyncWrapper = require('../../helper/asyncWrapper');
 const promisify = require('es6-promisify');
-const email = require('../../helper/mail');
+const mail = require('../../helper/mail');
 const crypto = require('crypto');
 
 module.exports = {
@@ -83,37 +83,30 @@ module.exports = {
                 res.redirect('back');
             },
             json() {
-                res.send({
-                    errors: [
-                        {
-                            param: exist,
-                            msg
-                        }
-                    ]
-                });
+                res.send({ errors: [{ param: exist, msg }] });
             }
         });
     }),
 
     register: asyncWrapper(async (req, res) => {
-        console.log('inside controller');
         const user = new User({ email: req.body.email, name: req.body.name });
+
         const register = promisify(User.register, User);
 
-        user.confirmationToken = crypto.randomBytes(20).toString('hex');
-        user.confirmationExpires = Date.now() + 3600000; // 1 hour from now
+        user.confirmation_token = crypto.randomBytes(20).toString('hex');
+        user.confirmation_expire_at = Date.now() + 3600000; // 1 hour from now
 
         await register(user, req.body.password);
 
-        const redirectURL = `http://${req.headers.host}/confirmation/${
-            user.confirmationToken
+        const URL = `http://${req.headers.host}/register/confirmation/${
+            user.confirmation_token
         }`;
 
         await mail.send({
             filename: 'register-confirmation',
-            to: req.body.email,
+            user,
             subject: 'Register Confirmation',
-            redirectURL
+            URL
         });
 
         req.flash(
@@ -123,6 +116,7 @@ module.exports = {
             } for the confirmation email.`
         );
 
-        res.redirect('back');
+        res.status(201);
+        return res.redirect('back');
     })
 };

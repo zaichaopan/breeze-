@@ -5,6 +5,7 @@ const htmlToText = require('html-to-text');
 const promisify = require('es6-promisify');
 
 let fake = false;
+let sentMails = [];
 
 const transport = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
@@ -35,12 +36,23 @@ exports.send = async options => {
         html,
         text
     };
+
     const sendMail = promisify(transport.sendMail, transport);
+
+    if (fake) {
+        sentMails = [...sentMails, mailOptions.to];
+        fake = false;
+        return;
+    }
+
     return sendMail(mailOptions);
 };
 
-exports.hasSentTo = (res, email) => {
-    return res.accepted.includes(email);
+exports.hasSentTo = email => {
+    return sentMails.includes(email);
 };
 
-exports.fake = () => (fake = false);
+exports.fake = () => {
+    fake = true;
+    sentMails = [];
+};

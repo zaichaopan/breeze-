@@ -2,8 +2,10 @@ const express = require('express');
 const request = require('supertest');
 const { expect } = require('chai');
 const userFactory = require('../../db/factories/user');
+const User = require('../../models/user');
 const app = require('../../app');
 const { loginAs, clearDb } = require('../helper');
+const mail = require('../../helper/mail');
 
 describe.only('register', function() {
     this.timeout(5000);
@@ -152,6 +154,28 @@ describe.only('register', function() {
             });
         });
 
-        describe.skip('when register with valid data', function() {});
+        describe.only('when register with valid data', function() {
+            it('should register a new user with given data and send registration confirmation', async function() {
+               // mail.fake();
+
+                let res = await request(app)
+                    .post('/register')
+                    .send({
+                        name: 'jane',
+                        email: 'jane@example.com',
+                        password: 'password',
+                        password_confirmation: 'password'
+                    })
+                    .set('Accept', 'application/json');
+
+                let newUser = await User.findOne({
+                    name: 'jane',
+                    email: 'jane@example.com'
+                });
+
+                expect(newUser).to.be.not.null;
+              //  expect(mail.hasSentTo('jane@example.com')).to.be.true;
+            });
+        });
     });
 });
