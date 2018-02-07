@@ -17,17 +17,16 @@ const {
 module.exports = parent => {
     let app = express();
 
-    // auth routing
     app.get('/login', guest, showLoginForm);
     app.post('/login', guest, login);
-
     app.get('/register', guest, showRegisterForm);
     app.post('/register', guest, validateRegister, checkUserExists, register);
-    app.get('/register/confirmation/:confirmation_token', confirmEmail, login);
+    app.get('/register/confirmation/:confirmation_token', confirmEmail);
 
     app.use(resource(homeController));
     app.use(resource(threadsController));
     app.use(resource(repliesController));
     app.use(resource(userAvatars));
+
     parent.use(app);
 };
