@@ -6,7 +6,7 @@ const userFactory = require('../../db/factories/user');
 const User = require('../../models/user');
 const mail = require('../../helper/mail');
 
-describe.only('forget password', function() {
+describe('forget password', function() {
     this.timeout(5000);
     beforeEach(async function() {
         await clearDb();

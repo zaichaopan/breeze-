@@ -18,7 +18,8 @@ describe('register', function() {
         john = await userFactory.create({
             name: 'john',
             email: 'john@example.com',
-            password: 'password'
+            password: 'password',
+            is_confirmed: true
         });
 
         loginAsJohn = await loginAs({

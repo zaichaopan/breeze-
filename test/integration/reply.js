@@ -21,12 +21,14 @@ describe('replies', function() {
 
         john = await userFactory.create({
             email: 'john@example.com',
-            password: 'password'
+            password: 'password',
+            is_confirmed: true
         });
 
         jane = await userFactory.create({
             email: 'jane@example.com',
-            password: 'password'
+            password: 'password',
+            is_confirmed: true
         });
         thread = await threadFactory.create();
 

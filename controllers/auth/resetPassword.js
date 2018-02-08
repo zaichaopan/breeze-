@@ -3,7 +3,7 @@ const User = require('../../models/user');
 const promisify = require('es6-promisify');
 
 module.exports = {
-    validResetPassword: () => {
+    validResetPassword: (req, res, next) => {
         req.checkBody('password', 'Password Cannot be Blank!').notEmpty();
 
         req
@@ -17,6 +17,10 @@ module.exports = {
             )
             .notEmpty();
 
+        req
+            .checkBody('password_confirmation', 'Your passwords do not match!')
+            .equals(req.body.password);
+
         const errors = req.validationErrors();
 
         if (errors) {
@@ -25,7 +29,7 @@ module.exports = {
 
             return res.format({
                 html() {
-                    res.render('back', {
+                    res.render('auth/reset-password', {
                         body: req.body,
                         flashes: req.flash()
                     });
@@ -58,7 +62,7 @@ module.exports = {
 
     reset: asyncWrapper(async (req, res, next) => {
         let user = await User.findOne({
-            password_reset_token: req.params.password_reset_token,
+            password_reset_token: req.body.password_reset_token,
             password_reset_expire_at: { $gt: Date.now() }
         });
 
@@ -70,10 +74,13 @@ module.exports = {
         const setPassword = promisify(user.setPassword, user);
 
         await setPassword(req.body.password);
+
         user.reset_password_token = null;
         user.reset_password_expire_at = null;
         const updatedUser = await user.save();
+
         await req.login(updatedUser);
+
         req.flash(
             'success',
             'Your password has been reset! You are now logged in!'

@@ -18,7 +18,8 @@ describe('user avatar', function() {
 
         john = await userFactory.create({
             email: 'john@example.com',
-            password: 'password'
+            password: 'password',
+            is_confirmed: true
         });
 
         loginAsJohn = await loginAs({
