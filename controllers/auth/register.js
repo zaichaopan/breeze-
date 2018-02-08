@@ -26,7 +26,7 @@ module.exports = {
 
         req
             .checkBody('password', 'passwords must be at least 6 chars long!')
-            .isLength({ min: 5 });
+            .isLength({ min: 6 });
 
         req
             .checkBody(
@@ -46,8 +46,7 @@ module.exports = {
 
             return res.format({
                 html() {
-                    res.render('auth/register', {
-                        title: 'Register',
+                    res.render('back', {
                         body: req.body,
                         flashes: req.flash()
                     });
@@ -58,6 +57,7 @@ module.exports = {
                 }
             });
         }
+
         next();
     },
 

@@ -14,6 +14,17 @@ const {
     register
 } = require('../controllers/auth/register');
 
+const {
+    showForgetPasswordForm,
+    sendResetPasswordLink
+} = require('../controllers/auth/forgetPassword');
+
+const {
+    validResetPassword,
+    showResetForm,
+    reset
+} = require('../controllers/auth/resetPassword');
+
 module.exports = parent => {
     let app = express();
 
@@ -22,6 +33,10 @@ module.exports = parent => {
     app.get('/register', guest, showRegisterForm);
     app.post('/register', guest, validateRegister, checkUserExists, register);
     app.get('/register/confirmation/:confirmation_token', confirmEmail);
+    app.get('/forget-password', guest, showForgetPasswordForm);
+    app.post('/forget-password', guest, sendResetPasswordLink);
+    app.get('/reset-password/:password_reset_token', guest, showResetForm);
+    app.post('/reset-password', guest, validResetPassword, reset);
 
     app.use(resource(homeController));
     app.use(resource(threadsController));

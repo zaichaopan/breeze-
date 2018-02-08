@@ -14,8 +14,8 @@ module.exports = new Schema({
         unique: true,
         trim: true
     },
-    resetPasswordToken: String,
-    resetPasswordExpires: Date,
+    password_reset_token: String,
+    password_reset_expire_at: Date,
     is_confirmed: { type: Boolean, default: false },
     confirmation_token: String,
     confirmation_expire_at: Date,
