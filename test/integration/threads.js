@@ -6,7 +6,7 @@ const userFactory = require('../../db/factories/user');
 const { expect } = require('chai');
 const { loginAs, clearDb } = require('../helper');
 
-describe.skip('threads', function() {
+describe('threads', function() {
     this.timeout(5000);
 
     let jane;
@@ -39,10 +39,12 @@ describe.skip('threads', function() {
             author: john._id
         });
 
-        loginAsJane = await loginAs({
-            email: jane.email,
+        loginAsJohn = await loginAs({
+            email: john.email,
             password: 'password'
         });
+
+
     });
 
     describe('GET /threads', function() {
@@ -82,7 +84,7 @@ describe.skip('threads', function() {
     describe('GET /threads/create', function() {
         describe('when login', function() {
             it('should display the create form', function(done) {
-                loginAsJane.get('/threads/create').expect(200, done);
+                loginAsJohn.get('/threads/create').expect(200, done);
             });
         });
 
@@ -109,7 +111,7 @@ describe.skip('threads', function() {
         describe('when login', function() {
             describe('when title or body not present', function() {
                 it('show get 302', function(done) {
-                    loginAsJane
+                    loginAsJohn
                         .post('/threads')
                         .send({
                             title: undefined,
@@ -121,20 +123,20 @@ describe.skip('threads', function() {
 
             describe('when title and body present', function() {
                 it('should create a thread for user', async function() {
-                    const res = await loginAsJane.post('/threads').send({
+                    const res = await loginAsJohn.post('/threads').send({
                         title: 'Hello',
-                        body: 'Foobar'
+                        body: 'created by jane'
                     });
 
                     let thread = await Thread.findOne({
                         title: 'Hello',
-                        body: 'Foobar'
+                        body: 'created by jane'
                     });
 
                     expect(thread.title).to.be.equal('Hello');
-                    expect(thread.body).to.be.equal('Foobar');
+                    expect(thread.body).to.be.equal('created by jane');
                     expect(thread.author.toString()).to.equal(
-                        jane._id.toString()
+                        john._id.toString()
                     );
                 });
             });
@@ -145,16 +147,16 @@ describe.skip('threads', function() {
         describe('when login', function() {
             describe('when not owner', function() {
                 it('should get 403', function(done) {
-                    loginAsJane
-                        .get(`/threads/${threadByJohn._id}/edit`)
+                    loginAsJohn
+                        .get(`/threads/${threadByJane._id}/edit`)
                         .expect(403, done);
                 });
             });
 
             describe('when owner', function() {
                 it('should display the edit form', function(done) {
-                    loginAsJane
-                        .get(`/threads/${threadByJane._id}/edit`)
+                    loginAsJohn
+                        .get(`/threads/${threadByJohn._id}/edit`)
                         .expect(200, done);
                 });
             });
@@ -174,8 +176,8 @@ describe.skip('threads', function() {
         describe('when login', function() {
             describe('when not creator', function() {
                 it('should get 403', function(done) {
-                    loginAsJane
-                        .post(`/threads/${threadByJohn._id}?_method=PUT`)
+                    loginAsJohn
+                        .post(`/threads/${threadByJane._id}?_method=PUT`)
                         .send({})
                         .expect(403, done);
                 });
@@ -184,8 +186,8 @@ describe.skip('threads', function() {
             describe('when creator', function() {
                 describe('when title and body not present', function() {
                     it('should get 302', function(done) {
-                        loginAsJane
-                            .post(`/threads/${threadByJane._id}?_method=PUT`)
+                        loginAsJohn
+                            .post(`/threads/${threadByJohn._id}?_method=PUT`)
                             .send({})
                             .expect(302, done);
                     });
@@ -193,15 +195,15 @@ describe.skip('threads', function() {
 
                 describe('when title and body present', function() {
                     it('should get thread for the creator', async function() {
-                        const res = await loginAsJane
-                            .post(`/threads/${threadByJane._id}?_method=PUT`)
+                        const res = await loginAsJohn
+                            .post(`/threads/${threadByJohn._id}?_method=PUT`)
                             .send({
                                 title: 'new title',
                                 body: 'new body'
                             });
 
                         let newThread = await Thread.findOne({
-                            _id: threadByJane._id
+                            _id: threadByJohn._id
                         });
 
                         expect(newThread.title).to.equal('new title');
@@ -214,7 +216,7 @@ describe.skip('threads', function() {
         describe('when not login', function() {
             it('should redirect to login', function(done) {
                 request(app)
-                    .post(`/threads/${threadByJane._id}?_method=PUT`)
+                    .post(`/threads/${threadByJohn._id}?_method=PUT`)
                     .send({})
                     .expect('Location', '/login')
                     .expect(302, done);
@@ -226,7 +228,7 @@ describe.skip('threads', function() {
         describe('when not login', function() {
             it('should redirect to login', function(done) {
                 request(app)
-                    .post(`/threads/${threadByJane._id}?_method=DELETE`)
+                    .post(`/threads/${threadByJohn._id}?_method=DELETE`)
                     .send({})
                     .expect('Location', '/login')
                     .expect(302, done);
@@ -236,7 +238,7 @@ describe.skip('threads', function() {
         describe('when login', function() {
             describe('when not present', function() {
                 it('should get 404', function(done) {
-                    loginAsJane
+                    loginAsJohn
                         .post(`/threads/abc?_method=DELETE`)
                         .send({})
                         .expect(404, done);
@@ -246,12 +248,12 @@ describe.skip('threads', function() {
             describe('when present', function() {
                 describe('when it is creator', function() {
                     it('should remove the thread for the creator', async function() {
-                        const res = await loginAsJane
-                            .post(`/threads/${threadByJane._id}?_method=DELETE`)
+                        const res = await loginAsJohn
+                            .post(`/threads/${threadByJohn._id}?_method=DELETE`)
                             .send({});
 
                         let data = await Thread.findOne({
-                            _id: threadByJane._id
+                            _id: threadByJohn._id
                         });
 
                         expect(data).to.be.null;
@@ -260,8 +262,8 @@ describe.skip('threads', function() {
 
                 describe('when it is not creator', function(done) {
                     it('should get 403', function(done) {
-                        loginAsJane
-                            .post(`/threads/${threadByJohn._id}?_method=DELETE`)
+                        loginAsJohn
+                            .post(`/threads/${threadByJane._id}?_method=DELETE`)
                             .send({})
                             .expect(403, done);
                     });
