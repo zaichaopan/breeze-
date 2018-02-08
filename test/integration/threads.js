@@ -13,8 +13,8 @@ describe('threads', function() {
     let john;
     let threadByJane;
     let threadByJohn;
+    let loginAsJohn;
     let loginAsJane;
-
     before(async function() {
         await clearDb();
 
@@ -38,13 +38,10 @@ describe('threads', function() {
             title: 'foobar',
             author: john._id
         });
-
-        loginAsJohn = await loginAs({
-            email: john.email,
+        loginAsJane = await loginAs({
+            email: jane.email,
             password: 'password'
         });
-
-
     });
 
     describe('GET /threads', function() {
@@ -84,7 +81,7 @@ describe('threads', function() {
     describe('GET /threads/create', function() {
         describe('when login', function() {
             it('should display the create form', function(done) {
-                loginAsJohn.get('/threads/create').expect(200, done);
+                loginAsJane.get('/threads/create').expect(200, done);
             });
         });
 
@@ -111,7 +108,7 @@ describe('threads', function() {
         describe('when login', function() {
             describe('when title or body not present', function() {
                 it('show get 302', function(done) {
-                    loginAsJohn
+                    loginAsJane
                         .post('/threads')
                         .send({
                             title: undefined,
@@ -123,7 +120,7 @@ describe('threads', function() {
 
             describe('when title and body present', function() {
                 it('should create a thread for user', async function() {
-                    const res = await loginAsJohn.post('/threads').send({
+                    const res = await loginAsJane.post('/threads').send({
                         title: 'Hello',
                         body: 'created by jane'
                     });
@@ -136,7 +133,7 @@ describe('threads', function() {
                     expect(thread.title).to.be.equal('Hello');
                     expect(thread.body).to.be.equal('created by jane');
                     expect(thread.author.toString()).to.equal(
-                        john._id.toString()
+                        jane._id.toString()
                     );
                 });
             });
@@ -147,16 +144,16 @@ describe('threads', function() {
         describe('when login', function() {
             describe('when not owner', function() {
                 it('should get 403', function(done) {
-                    loginAsJohn
-                        .get(`/threads/${threadByJane._id}/edit`)
+                    loginAsJane
+                        .get(`/threads/${threadByJohn._id}/edit`)
                         .expect(403, done);
                 });
             });
 
             describe('when owner', function() {
                 it('should display the edit form', function(done) {
-                    loginAsJohn
-                        .get(`/threads/${threadByJohn._id}/edit`)
+                    loginAsJane
+                        .get(`/threads/${threadByJane._id}/edit`)
                         .expect(200, done);
                 });
             });
@@ -165,7 +162,7 @@ describe('threads', function() {
         describe('when not login', function() {
             it('should redirect to login', function(done) {
                 request(app)
-                    .get(`/threads/${threadByJohn._id}/edit`)
+                    .get(`/threads/${threadByJane._id}/edit`)
                     .expect('Location', '/login')
                     .expect(302, done);
             });
@@ -176,8 +173,8 @@ describe('threads', function() {
         describe('when login', function() {
             describe('when not creator', function() {
                 it('should get 403', function(done) {
-                    loginAsJohn
-                        .post(`/threads/${threadByJane._id}?_method=PUT`)
+                    loginAsJane
+                        .post(`/threads/${threadByJohn._id}?_method=PUT`)
                         .send({})
                         .expect(403, done);
                 });
@@ -186,8 +183,8 @@ describe('threads', function() {
             describe('when creator', function() {
                 describe('when title and body not present', function() {
                     it('should get 302', function(done) {
-                        loginAsJohn
-                            .post(`/threads/${threadByJohn._id}?_method=PUT`)
+                        loginAsJane
+                            .post(`/threads/${threadByJane._id}?_method=PUT`)
                             .send({})
                             .expect(302, done);
                     });
@@ -195,15 +192,15 @@ describe('threads', function() {
 
                 describe('when title and body present', function() {
                     it('should get thread for the creator', async function() {
-                        const res = await loginAsJohn
-                            .post(`/threads/${threadByJohn._id}?_method=PUT`)
+                        const res = await loginAsJane
+                            .post(`/threads/${threadByJane._id}?_method=PUT`)
                             .send({
                                 title: 'new title',
                                 body: 'new body'
                             });
 
                         let newThread = await Thread.findOne({
-                            _id: threadByJohn._id
+                            _id: threadByJane._id
                         });
 
                         expect(newThread.title).to.equal('new title');
@@ -216,7 +213,7 @@ describe('threads', function() {
         describe('when not login', function() {
             it('should redirect to login', function(done) {
                 request(app)
-                    .post(`/threads/${threadByJohn._id}?_method=PUT`)
+                    .post(`/threads/${threadByJane._id}?_method=PUT`)
                     .send({})
                     .expect('Location', '/login')
                     .expect(302, done);
@@ -228,7 +225,7 @@ describe('threads', function() {
         describe('when not login', function() {
             it('should redirect to login', function(done) {
                 request(app)
-                    .post(`/threads/${threadByJohn._id}?_method=DELETE`)
+                    .post(`/threads/${threadByJane._id}?_method=DELETE`)
                     .send({})
                     .expect('Location', '/login')
                     .expect(302, done);
@@ -238,7 +235,7 @@ describe('threads', function() {
         describe('when login', function() {
             describe('when not present', function() {
                 it('should get 404', function(done) {
-                    loginAsJohn
+                    loginAsJane
                         .post(`/threads/abc?_method=DELETE`)
                         .send({})
                         .expect(404, done);
@@ -248,12 +245,12 @@ describe('threads', function() {
             describe('when present', function() {
                 describe('when it is creator', function() {
                     it('should remove the thread for the creator', async function() {
-                        const res = await loginAsJohn
-                            .post(`/threads/${threadByJohn._id}?_method=DELETE`)
+                        const res = await loginAsJane
+                            .post(`/threads/${threadByJane._id}?_method=DELETE`)
                             .send({});
 
                         let data = await Thread.findOne({
-                            _id: threadByJohn._id
+                            _id: threadByJane._id
                         });
 
                         expect(data).to.be.null;
@@ -262,8 +259,8 @@ describe('threads', function() {
 
                 describe('when it is not creator', function(done) {
                     it('should get 403', function(done) {
-                        loginAsJohn
-                            .post(`/threads/${threadByJane._id}?_method=DELETE`)
+                        loginAsJane
+                            .post(`/threads/${threadByJohn._id}?_method=DELETE`)
                             .send({})
                             .expect(403, done);
                     });
