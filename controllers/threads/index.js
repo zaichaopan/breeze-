@@ -3,6 +3,7 @@ const Thread = require('../../models/thread');
 const asyncWrapper = require('../../helper/asyncWrapper');
 const checkOwner = require('../../middlewares/checkOwner');
 const loadModel = require('../../middlewares/loadModel');
+const Channel = require('../../models/channel');
 
 module.exports = {
     index: {
@@ -30,9 +31,13 @@ module.exports = {
         url: '/threads',
         before: [auth],
         handler: asyncWrapper(async (req, res) => {
-            let thread = new Thread(req.body);
-            thread.author = req.user._id;
+            let thread = new Thread({
+                ...req.body,
+                ...{ author: req.user._id }
+            });
+
             await thread.save(req.user);
+
             res.redirect(`/threads/${thread._id}`);
         })
     },

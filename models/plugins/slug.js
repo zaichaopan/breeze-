@@ -2,7 +2,11 @@ const slug = require('slug');
 
 module.exports = schema => {
     schema.pre('save', async function(next) {
-        if (!this.isModified('title')) {
+        let unmodified = this.sluggables.every(sluggable => {
+            !this.isModified(sluggable);
+        });
+
+        if (unmodified) {
             return next();
         }
 
